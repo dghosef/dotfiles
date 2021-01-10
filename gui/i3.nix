@@ -24,7 +24,6 @@ in {
       startup = [
         { command = "feh --bg-fill ${./top.png}"; notification = false; always = true; }
         { command = "dropbox start"; notification = false; always = true; }
-        { command = "blueberry-tray"; notification = false; always = true; }
       ];
       bars = [
         {
