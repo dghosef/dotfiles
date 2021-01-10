@@ -51,6 +51,7 @@ in
     pkgs.gimp
     # Emacs
     pkgs.emacs
+    pkgs.ripgrep
     pkgs.irony-server
     # Python
     pkgs.black

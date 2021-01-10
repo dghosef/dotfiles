@@ -4,15 +4,15 @@
 ;; Set up package.el to work with MELPA
 (require 'package)
 (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-                         ("melpa" . "https://melpa.org/packages/")))
+						 ("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
 
 
 ;; --------------------------Vim-migration/general-editing------------------------
-;; Spaces by default
 (setq-default tab-width 4)
 (setq-default tab-stop-list 4)
 ;; Autodetect indentation if possible
+
 (unless (package-installed-p 'dtrt-indent)
   (package-install 'dtrt-indent))
 ;; Download Evil
@@ -32,6 +32,8 @@
 (evil-collection-init)
 ;; Autosave backup directory
 (setq backup-directory-alist `(("." . "~/.emacs.d/saves")))
+;; Autorefresh files
+(setq global-auto-revert-mode t)
 ;; set leader key in normal state
 ;; regular undo tree
 (unless (package-installed-p 'undo-tree)
@@ -93,6 +95,11 @@
 (global-set-key (kbd "M-9") (lambda () (interactive) (tab-bar-select-tab 9)))
 (global-set-key (kbd "M-0") (lambda () (interactive) (tab-bar-select-tab 10)))
 
+;; Projectile project jumping
+(unless (package-installed-p 'projectile)
+  (package-install 'projectile))
+(projectile-mode +1)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 ;; ---------------------------Aesthetics-------------------------
 (unless (package-installed-p 'smart-mode-line)
   (package-install 'smart-mode-line))
@@ -118,6 +125,8 @@
 ;; Live preview in eww
 (unless (package-installed-p 'org-preview-html)
   (package-install 'org-preview-html))
+;; Disable indentation
+(setq org-adapt-indentation nil)
 
 
 ;; --------------------------------Magit--------------------------
@@ -137,11 +146,11 @@
   "
   (interactive)
   (let (
-        (path (file-name-directory (or  (buffer-file-name) default-directory)))
-        )
-    (with-current-buffer "*eshell*"
-      (cd path)
-      (eshell-emit-prompt))));; Start small shell with SPC SPC
+		(path (file-name-directory (or  (buffer-file-name) default-directory)))
+		)
+	(with-current-buffer "*eshell*"
+	  (cd path)
+	  (eshell-emit-prompt))));; Start small shell with SPC SPC
 (defun start_small_shell()
   (interactive)
   (split-window-below)
@@ -159,10 +168,10 @@
 (defun eshell-add-aliases ()
   "Doc-string."
   (dolist (var '(("ipython" "ipython --simple-prompt -i --pprint $*")
-                 (":q" "exit $*")
-                 ("dotfiles" "/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME $*")
-                 ("tp" "trash-put $*")))
-    (add-to-list 'eshell-command-aliases-list var)))
+				 (":q" "exit $*")
+				 ("dotfiles" "/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME $*")
+				 ("tp" "trash-put $*")))
+	(add-to-list 'eshell-command-aliases-list var)))
 
 (add-hook 'eshell-post-command-hook 'eshell-add-aliases)
 

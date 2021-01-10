@@ -1,6 +1,5 @@
 { config, lib, pkgs, ... }:
 
-# TODO - Spotify, i3lock, keepassxc
 let 
   mod = "Mod4";
   fg  = "#fdf6e3";
@@ -49,7 +48,7 @@ in {
       keybindings = lib.mkOptionDefault {
 
         # ------------Lock----------------
-        "${mod}+g" = "exec --no-startup-id i3lock --color=${bg} --show-failed-attempts";
+        "${mod}+g" = "exec --no-startup-id i3lock --color=#000000 --show-failed-attempts";
 
         # -------------Navigation-----------
         # Focus
@@ -111,8 +110,6 @@ in {
         "${mod}+s" = "workspace number 10";
       };
     };
-    # -------------------Screenshot------------
-    extraConfig = "bindsym --release Mod4+Shift+s exec scrot -s -f /home/dghosef/Downloads/(date).png";
   };
 }
 
