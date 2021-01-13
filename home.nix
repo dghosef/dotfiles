@@ -1,6 +1,7 @@
 # inspired by https://github.com/srid/nix-config/blob/705a70c094da53aa50cf560179b973529617eb31/nix/home.nix
 { config, pkgs, ... }:
 
+with pkgs;
 let
   allPlatformImports = [
     ./shell/git.nix
@@ -46,6 +47,7 @@ in
     pkgs.qutebrowser
     pkgs.spotify
     pkgs.keepassxc
+    pkgs.wget
     # Images
     pkgs.feh
     pkgs.gimp
@@ -53,22 +55,22 @@ in
     pkgs.emacs
     pkgs.ripgrep
     pkgs.irony-server
-    # Python
-    pkgs.black
-    pkgs.python38
-    pkgs.python38Packages.jedi
-    pkgs.python38Packages.yapf
-    pkgs.python38Packages.gnureadline
-    pkgs.python38Packages.ipython
-    pkgs.python38Packages.pep8
-    pkgs.python
     # C-langs
     pkgs.bear
     pkgs.clang
     pkgs.llvm
+    # 107e
+    pkgs.screen
+    pkgs.binutils
+    pkgs.dpkg
+    pkgs.patchelf
+    pkgs.readline
+    pkgs.desktop-file-utils
     # Communication
     pkgs.zoom-us
     pkgs.discord
+    # FPL team generator
+    cbc
   ];
   # Config files
   home.file.".emacs".source = ./init.el;

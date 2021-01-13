@@ -1,3 +1,5 @@
+;; Requires fzf, ripgrep/ag, python, ipython, llvm, ,irony, bear
+;; python packages - jedi, black, autopep8, yapf(install w/ pip), pyreadline
 ;; Enable debug messages for problems with this file
 ;; (setq debug-on-error t)
 ;; ---------------------------Setup package manager-------------------------
@@ -217,3 +219,10 @@
 (add-hook 'objc-mode-hook 'irony-mode)
 
 (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+
+
+;; ------------------------NIXlang----------------------------
+(unless (package-installed-p 'nix-mode) ;; syntax checker
+  (package-install 'nix-mode))
+(require 'nix-mode)
+(add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode))

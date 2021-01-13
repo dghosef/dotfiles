@@ -10,6 +10,24 @@
 # ###########################################################
 
 { config, pkgs, lib, ... }:
+with pkgs;
+let
+  my-python-packages = python-packages: with python-packages; [
+    pandas
+    requests
+    pulp
+    black
+    jedi
+    yapf
+    gnureadline
+    ipython
+    pep8
+    # 107e
+    pyserial
+    xmodem
+  ]; 
+    python-with-my-packages = python3.withPackages my-python-packages;
+in
 {
   # -------------------System stuff-------------------
   imports =
@@ -52,7 +70,6 @@
   # Set your time zone.
   time.timeZone = "America/Los_Angeles";
 
-
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
   console = {
@@ -75,9 +92,6 @@
   # Enable sound.
   sound.enable = true;
   hardware.pulseaudio.enable = true;
-  hardware.pulseaudio.package = pkgs.pulseaudioFull;
-  hardware.bluetooth.enable = true;
-  # hardware.pulseaudio.support32Bit = true;
   # Enable touchpad support (enabled default in most desktopManager).
   services.xserver.libinput.enable = true;
   # Disable shutdown in power key
@@ -91,7 +105,7 @@
     home = "/home/dghosef";
     extraGroups = [ "wheel" # Enable ‘sudo’ for the user.
                     "scanner" "lp"
-                     "audio"
+                     "audio" "sound"
                      "networkmanager" ]; 
   };
   programs.fish.enable = true;
@@ -130,8 +144,16 @@
     vim
     firefox
     git
+    python-with-my-packages
+
   ];
+  # Gaming
+  programs.steam.enable = true;
   environment.variables.EDITOR = "termite";
+  #  --------------------------Virtualbox-------------------
+  virtualisation.virtualbox.host.enable = true;
+  users.extraGroups.vboxusers.members = [ "user-with-access-to-virtualbox" ];
+  virtualisation.virtualbox.host.enableExtensionPack = true;
   # ---------------------------X-Server-----------------------
   services.xserver = {
     enable = true;
