@@ -51,12 +51,13 @@ in
     pkgs.gimp
     pkgs.krita
     pkgs.drawing
-    # Latex
-    pkgs.texlive.combined.scheme-full
     # Emacs
     pkgs.emacs
+    pkgs.emacs26Packages.pdf-tools
     pkgs.ripgrep
-    pkgs.irony-server
+    pkgs.irony-server # c-type language autocomplete
+    pkgs.texlive.combined.scheme-full # latex
+    pkgs.ispell
     # C-langs
     pkgs.bear
     pkgs.clang

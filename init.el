@@ -1,4 +1,8 @@
 ;;; Notes
+; Please install git, vim, etc
+; For spellcheck, ispell
+; For pdf editing follow https://github.com/politza/pdf-tools. Comment out pdf-loader-install if necessary
+; For better projectile search install ripgrep
 ; For python development install python(package manager), jedi, black, autopep8, yapf, pyreadline, ipython(pip)
 ; For c/c++/obj-c/etc install llvm, irony-server, bear
 ; For taking notes/drawing the program "drawing"
@@ -89,6 +93,12 @@
 (unless (package-installed-p 'which-key)
   (package-install 'which-key))
 (which-key-mode)
+; snippets
+(unless (package-installed-p 'yasnippet)
+  (package-install 'yasnippet))
+(require 'yasnippet)
+(yas-global-mode 1)
+
 
 ;;; ------------------------Navigation---------------------------
 ; tabs shortcuts
@@ -110,6 +120,9 @@
   (package-install 'projectile))
 (projectile-mode +1)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+(setq projectile-enable-caching t)
+; See https://emacs.stackexchange.com/questions/16497/how-to-exclude-files-from-projectile
+(setq projectile-enable-caching t)
 
 ;;; ---------------------------Aesthetics-------------------------
 ; Disable toolbar/menubar/:q
@@ -131,6 +144,11 @@
 ; Live preview in eww
 (unless (package-installed-p 'org-preview-html)
   (package-install 'org-preview-html))
+; pretty bullets :)
+(unless (package-installed-p 'org-superstar-mode)
+  (package-install 'org-superstar-mode))
+(require 'org-superstar)
+(add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
 (setq org-startup-with-inline-images t) ; show inline images
 ; Start drawing software and insert new drawing into current line
 (defun create-img ()
@@ -147,8 +165,55 @@
 (setq org-log-done 'time)
 ;; org indentation
 (setq org-startup-indented t)
-;; 
-
+;; abbreviate TODO and DONE
+(setq org-todo-keywords
+      '((sequence "LATER(l)" "TODO(t)" "|" "DONE(d)")))
+(setq org-directory "~/Dropbox/org/")
+(setq org-agenda-files (list (concat org-directory "todo.org"))) ; Only look at todo list
+(setq org-agenda-start-on-weekday nil) ; Make agenda start on current day
+; Bindings to common org files
+(global-set-key (kbd "<f5>" )
+				(lambda () (interactive)
+				  (find-file (concat org-directory "todo.org"))))
+(global-set-key (kbd "<f6>" )
+				(lambda () (interactive)
+				  (find-file (concat org-directory "lists.org"))))
+(global-set-key (kbd "<f7>" )
+				(lambda () (interactive)
+				  (find-file (concat org-directory "notes.org"))))
+(global-set-key (kbd "<f8>" )
+				(lambda () (interactive)
+				  (find-file (concat org-directory "scratchpad.org"))))
+(global-set-key (kbd "<f9>" )
+				(lambda () (interactive)
+				  (find-file (concat org-directory "software.org"))))
+(global-set-key (kbd "<f10>" )
+				(lambda () (interactive)
+				  (message (concat "f5 - todo; f6 - lists; f7 - notes;"
+						   "f8 - scratchpad; f9 - software"))))
+(define-key global-map (kbd "C-c a") 'org-agenda)
+; Snippets
+(yas-define-snippets 'org-mode
+					 '(("bmatrix" "\\begin{bmatrix}\n$1\n\\end{bmatrix}" "Insert a latex bmatrix")
+					   ("bmx" "\\begin{bmatrix}\n$1\n\\end{bmatrix}" "Insert a latex bmatrix")
+					   ("begin" "\\begin{$1}\n\n\\end{$1}" "Begin stuff")
+					   ("latex" "#+BEGIN_SRC latex\n$1\n#+END_SRC latex" "Insert latex code")))
+(setq org-agenda-restore-windows-after-quit t)
+(setq org-default-notes-file (concat org-directory "scratchpad.org"))
+;;; ----------------------PDF--------------------------
+; If pdftools isn't installed it uses doc-view mode
+(evil-define-key 'normal doc-view-minor-mode-map
+  "h" 'doc-view-previous-page
+  "j" (lambda () (interactive) (doc-view-next-line-or-next-page 5))
+  "k" (lambda () (interactive) (doc-view-previous-line-or-previous-page 5))
+  "l" 'doc-view-next-page)
+(unless (package-installed-p 'let-alist)
+  (package-install 'let-alist))
+(unless (package-installed-p 'tablist)
+  (package-install 'tablist))
+(unless (package-installed-p 'pdf-tools)
+  (package-install 'pdf-tools))
+(pdf-loader-install)
 
 ;;; -----------------------Latex----------------------------
 (unless (package-installed-p 'auctex)

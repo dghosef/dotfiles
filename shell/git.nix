@@ -3,6 +3,8 @@
   programs.git = {
     enable = true;
     userName = "dghosef";
-    userEmail = "";
+    userEmail = "jdtan638@gmail.com";
+    ignores = [ "*~undo-tree~" ];
+
   };
 }
