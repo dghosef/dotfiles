@@ -37,8 +37,6 @@ in
   imports = if builtins.pathExists /etc/nixos
             then (allPlatformImports ++ nixImports)
             else allPlatformImports;
-  programs.fzf.enable = true;
-  programs.fzf.defaultCommand = "fd --type f --hidden";
   services.dropbox.enable = true;
   nixpkgs.config.allowUnfree = true;
   home.packages = [
@@ -51,6 +49,10 @@ in
     # Images
     pkgs.feh
     pkgs.gimp
+    pkgs.krita
+    pkgs.drawing
+    # Latex
+    pkgs.texlive.combined.scheme-full
     # Emacs
     pkgs.emacs
     pkgs.ripgrep
@@ -58,7 +60,6 @@ in
     # C-langs
     pkgs.bear
     pkgs.clang
-    pkgs.llvm
     # 107e
     pkgs.screen
     pkgs.binutils
@@ -70,7 +71,9 @@ in
     pkgs.zoom-us
     pkgs.discord
     # FPL team generator
-    cbc
+    pkgs.cbc
+    # Gaming
+    pkgs.minecraft
   ];
   # Config files
   home.file.".emacs".source = ./init.el;
