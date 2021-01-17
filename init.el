@@ -6,7 +6,7 @@
 ; For python development install python(package manager), jedi, black, autopep8, yapf, pyreadline, ipython(pip)
 ; For c/c++/obj-c/etc install llvm, irony-server, bear
 ; For taking notes/drawing the program "drawing"
-; For latex preview dvipng and 'latex'
+; For latex preview dvipng and 'latex'. For export also install zip
 ; Enable debug messages for problems with this file
 ; (setq debug-on-error t)
 ;;; ---------------------------Setup package manager-------------------------
@@ -123,7 +123,9 @@
 (setq projectile-enable-caching t)
 ; See https://emacs.stackexchange.com/questions/16497/how-to-exclude-files-from-projectile
 (setq projectile-enable-caching t)
-
+; Go to next and previous buffer
+(evil-define-key 'normal ‘global “bp” ’previous-buffer)
+(evil-define-key 'normal ‘global “bn” ’next-buffer)
 ;;; ---------------------------Aesthetics-------------------------
 ; Disable toolbar/menubar/:q
 (toggle-scroll-bar -1)
@@ -145,10 +147,10 @@
 (unless (package-installed-p 'org-preview-html)
   (package-install 'org-preview-html))
 ; pretty bullets :)
-(unless (package-installed-p 'org-superstar-mode)
-  (package-install 'org-superstar-mode))
-(require 'org-superstar)
-(add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+(unless (package-installed-p 'org-bullets)
+  (package-install 'org-bullets))
+(require 'org-bullets)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 (setq org-startup-with-inline-images t) ; show inline images
 ; Start drawing software and insert new drawing into current line
 (defun create-img ()
@@ -167,10 +169,13 @@
 (setq org-startup-indented t)
 ;; abbreviate TODO and DONE
 (setq org-todo-keywords
-      '((sequence "LATER(l)" "TODO(t)" "|" "DONE(d)")))
+      '((sequence "LATER(l)" "TODO(t)" "URGENT(u)" "|" "DONE(d)")))
 (setq org-directory "~/Dropbox/org/")
 (setq org-agenda-files (list (concat org-directory "todo.org"))) ; Only look at todo list
 (setq org-agenda-start-on-weekday nil) ; Make agenda start on current day
+(setq org-todo-keyword-faces
+      '(("URGENT" . org-warning)))
+
 ; Bindings to common org files
 (global-set-key (kbd "<f5>" )
 				(lambda () (interactive)
@@ -195,11 +200,29 @@
 ; Snippets
 (yas-define-snippets 'org-mode
 					 '(("bmatrix" "\\begin{bmatrix}\n$1\n\\end{bmatrix}" "Insert a latex bmatrix")
-					   ("bmx" "\\begin{bmatrix}\n$1\n\\end{bmatrix}" "Insert a latex bmatrix")
-					   ("begin" "\\begin{$1}\n\n\\end{$1}" "Begin stuff")
-					   ("latex" "#+BEGIN_SRC latex\n$1\n#+END_SRC latex" "Insert latex code")))
+					   ("bmx" "\\begin{bmatrix}$1\\end{bmatrix}$2" "Insert a latex bmatrix")
+					   ("begin" "\\begin{$1}\n$2\n\\end{$1}" "Begin stuff")
+					   ("box" "\\begin{tcolorbox}$1\\end{tcolorbox}" "tcolorbox - latex")
+										; Latex requires a line after begin{gather} for some reason
+					   ("latex" "#+BEGIN_SRC latex\n\\begin{equation}\n\\begin{gather*}\n\n$1\n\\end{gather*}\n\\end{equation}\n#+END_SRC latex" "Insert latex code")))
 (setq org-agenda-restore-windows-after-quit t)
 (setq org-default-notes-file (concat org-directory "scratchpad.org"))
+(global-set-key (kbd "C-c c") 'org-capture)
+; Required to get org and yas working.
+; see https://orgmode.org/manual/Conflicts.html#Conflicts
+(add-hook 'org-mode-hook
+		  (lambda ()
+			(setq-local yas/trigger-key [tab])
+			(define-key yas/keymap [tab] 'yas/next-field-or-maybe-expand)))
+(defun yas/org-very-safe-expand ()
+  (let ((yas/fallback-behavior 'return-nil)) (yas/expand)))
+(add-hook 'org-mode-hook
+          (lambda ()
+            (make-variable-buffer-local 'yas/trigger-key)
+            (setq yas/trigger-key [tab])
+            (add-to-list 'org-tab-first-hook 'yas/org-very-safe-expand)
+            (define-key yas/keymap [tab] 'yas/next-field)))
+
 ;;; ----------------------PDF--------------------------
 ; If pdftools isn't installed it uses doc-view mode
 (evil-define-key 'normal doc-view-minor-mode-map

@@ -54,6 +54,7 @@ in
     # Emacs
     pkgs.emacs
     pkgs.emacs26Packages.pdf-tools
+    pkgs.zip
     pkgs.ripgrep
     pkgs.irony-server # c-type language autocomplete
     pkgs.texlive.combined.scheme-full # latex
