@@ -46,7 +46,7 @@
 ; Autosave backup directory
 (setq backup-directory-alist `(("." . "~/.emacs.d/saves")))
 ; Autorefresh files
-(setq global-auto-revert-mode t)
+(global-auto-revert-mode)
 ; set leader key in normal state
 ; regular undo tree
 (unless (package-installed-p 'undo-tree)
@@ -88,6 +88,8 @@
 (when (version<= "26.0.50" emacs-version )
   (global-display-line-numbers-mode))
 (setq display-line-numbers-type 'relative)
+(setq-default display-line-numbers 'visual)
+(setq display-line-numbers 'visual)
 
 ; which-key
 (unless (package-installed-p 'which-key)
@@ -124,8 +126,8 @@
 ; See https://emacs.stackexchange.com/questions/16497/how-to-exclude-files-from-projectile
 (setq projectile-enable-caching t)
 ; Go to next and previous buffer
-(evil-define-key 'normal ‘global “bp” ’previous-buffer)
-(evil-define-key 'normal ‘global “bn” ’next-buffer)
+(global-set-key (kbd "C-{") 'previous-buffer)
+(global-set-key (kbd "C-}") 'next-buffer)
 ;;; ---------------------------Aesthetics-------------------------
 ; Disable toolbar/menubar/:q
 (toggle-scroll-bar -1)
@@ -171,42 +173,32 @@
 (setq org-todo-keywords
       '((sequence "LATER(l)" "TODO(t)" "URGENT(u)" "|" "DONE(d)")))
 (setq org-directory "~/Dropbox/org/")
-(setq org-agenda-files (list (concat org-directory "todo.org"))) ; Only look at todo list
+(setq org-agenda-files (list (concat org-directory "lists.org"))) ; Only look at todo list
 (setq org-agenda-start-on-weekday nil) ; Make agenda start on current day
 (setq org-todo-keyword-faces
       '(("URGENT" . org-warning)))
 
-; Bindings to common org files
-(global-set-key (kbd "<f5>" )
-				(lambda () (interactive)
-				  (find-file (concat org-directory "todo.org"))))
-(global-set-key (kbd "<f6>" )
-				(lambda () (interactive)
-				  (find-file (concat org-directory "lists.org"))))
-(global-set-key (kbd "<f7>" )
-				(lambda () (interactive)
-				  (find-file (concat org-directory "notes.org"))))
-(global-set-key (kbd "<f8>" )
-				(lambda () (interactive)
-				  (find-file (concat org-directory "scratchpad.org"))))
-(global-set-key (kbd "<f9>" )
-				(lambda () (interactive)
-				  (find-file (concat org-directory "software.org"))))
+; Bindings to common iles
 (global-set-key (kbd "<f10>" )
 				(lambda () (interactive)
-				  (message (concat "f5 - todo; f6 - lists; f7 - notes;"
-						   "f8 - scratchpad; f9 - software"))))
-(define-key global-map (kbd "C-c a") 'org-agenda)
+				  (find-file (concat org-directory "lists.org"))))
+(global-set-key (kbd "<f9>" )
+				(lambda () (interactive)
+				  (find-file "~/.config/nixpkgs/init.el")))
+(global-set-key (kbd "<f8>" )
+				(lambda () (interactive)
+				  (find-file "~/.config/nixpkgs/home.nix")))
 ; Snippets
 (yas-define-snippets 'org-mode
 					 '(("bmatrix" "\\begin{bmatrix}\n$1\n\\end{bmatrix}" "Insert a latex bmatrix")
 					   ("bmx" "\\begin{bmatrix}$1\\end{bmatrix}$2" "Insert a latex bmatrix")
 					   ("begin" "\\begin{$1}\n$2\n\\end{$1}" "Begin stuff")
+					   ("frc" "\\frac{$1}\\{$2}" "Insert a latex fraction")
 					   ("box" "\\begin{tcolorbox}$1\\end{tcolorbox}" "tcolorbox - latex")
-										; Latex requires a line after begin{gather} for some reason
-					   ("latex" "#+BEGIN_SRC latex\n\\begin{equation}\n\\begin{gather*}\n\n$1\n\\end{gather*}\n\\end{equation}\n#+END_SRC latex" "Insert latex code")))
+					   ("*" "\\cdot" "dot product")
+					   ("equation" "\\begin{equation*}\n\\begin{align*}\n$1\n\\end{align*}\n\\end{equation*}\n" "Insert latex code")))
 (setq org-agenda-restore-windows-after-quit t)
-(setq org-default-notes-file (concat org-directory "scratchpad.org"))
+(setq org-default-notes-file (concat org-directory "lists.org"))
 (global-set-key (kbd "C-c c") 'org-capture)
 ; Required to get org and yas working.
 ; see https://orgmode.org/manual/Conflicts.html#Conflicts
@@ -217,11 +209,11 @@
 (defun yas/org-very-safe-expand ()
   (let ((yas/fallback-behavior 'return-nil)) (yas/expand)))
 (add-hook 'org-mode-hook
-          (lambda ()
-            (make-variable-buffer-local 'yas/trigger-key)
-            (setq yas/trigger-key [tab])
-            (add-to-list 'org-tab-first-hook 'yas/org-very-safe-expand)
-            (define-key yas/keymap [tab] 'yas/next-field)))
+		  (lambda ()
+			(make-variable-buffer-local 'yas/trigger-key)
+			(setq yas/trigger-key [tab])
+			(add-to-list 'org-tab-first-hook 'yas/org-very-safe-expand)
+			(define-key yas/keymap [tab] 'yas/next-field)))
 
 ;;; ----------------------PDF--------------------------
 ; If pdftools isn't installed it uses doc-view mode

@@ -20,10 +20,14 @@ in {
       colors.focusedInactive  = { border = bg_border; background = bg_border; text = bg_border; indicator = bg_border; childBorder = bg_border; };
       colors.unfocused        = { border = bg_border; background = bg_border; text = bg_border; indicator = bg_border; childBorder = bg_border; };
       colors.urgent           = { border = fg_border; background = fg_border; text = fg_border; indicator = fg_border; childBorder = fg_border; };
+
       startup = [
         { command = "feh --bg-fill ${./top.png}"; notification = false; always = true; }
         { command = "dropbox start"; notification = false; always = true; }
+        { command = "nm-applet"; notification = false; always = true; }
+        { command = "pactl load-module module-switch-on-connect"; notification = false; always = true; }
       ];
+
       bars = [
         {
 	  position = "top";
@@ -64,8 +68,8 @@ in {
         "${mod}+Shift+l" = "move right";
   
         # Basic utilities
-	# volume buttons
-	"${mod}+equal" = "exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10%";
+        # volume buttons
+        "${mod}+equal" = "exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10%";
         "${mod}+minus" = "exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10%";
 
         # --------------------Spotify------------------

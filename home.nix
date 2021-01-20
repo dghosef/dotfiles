@@ -51,7 +51,7 @@ in
     pkgs.gimp
     pkgs.krita
     pkgs.drawing
-    # Emacs
+    # Emacs(try to keep most of config in init.el so it's portable)
     pkgs.emacs
     pkgs.emacs26Packages.pdf-tools
     pkgs.zip
