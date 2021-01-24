@@ -4,6 +4,7 @@
 ; For keepass, install keepass cli or kpcli or whatever it's called
 ; For spellcheck, ispell
 ; For email follow instructions at https://medium.com/@enzuru/emacs-26-wanderlust-and-modern-gmail-authentication-36e1ae61471f
+; Also, remember you can M-x elmo-passwd-alist-save
 ; For pdf editing follow https://github.com/politza/pdf-tools. Comment out pdf-loader-install if necessary
 ; For better projectile search install ripgrep
 ; For python development install python(package manager), jedi, black, autopep8, yapf, pyreadline, ipython(pip), flake8, rope
@@ -152,8 +153,8 @@
   (interactive)
   (if (> (window-pixel-width) (window-pixel-height))
 	  (split-and-follow-vertically)
-	(split-and-follow-horizontally))
-(global-set-key (kbd "C-<return>") 'split-along-longer-side)
+	(split-and-follow-horizontally)))
+(global-set-key (kbd "M-RET") 'split-along-longer-side)
 ;;; ---------------------------Aesthetics-------------------------
 ; Disable toolbar/menubar/:q
 (toggle-scroll-bar -1)
