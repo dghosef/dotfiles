@@ -51,7 +51,6 @@ in
     pkgs.keepassxc
     pkgs.kpcli
     pkgs.wget
-    pkgs.w3m
     # Images
     pkgs.feh
     pkgs.gimp
