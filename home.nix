@@ -40,12 +40,18 @@ in
   services.dropbox.enable = true;
   nixpkgs.config.allowUnfree = true;
   home.packages = [
+    # Misc
+    pkgs.zip
+    pkgs.unzip
     # Web
     pkgs.firefox
+    pkgs.google-chrome
     pkgs.qutebrowser
     pkgs.spotify
     pkgs.keepassxc
+    pkgs.kpcli
     pkgs.wget
+    pkgs.w3m
     # Images
     pkgs.feh
     pkgs.gimp
@@ -54,6 +60,7 @@ in
     # Emacs(try to keep most of config in init.el so it's portable)
     pkgs.emacs
     pkgs.emacs26Packages.pdf-tools
+    pkgs.emacs26Packages.elpy
     pkgs.zip
     pkgs.ripgrep
     pkgs.irony-server # c-type language autocomplete
@@ -61,6 +68,7 @@ in
     pkgs.ispell
     # C-langs
     pkgs.bear
+    pkgs.gdb
     pkgs.clang
     # 107e
     pkgs.screen
@@ -78,6 +86,7 @@ in
     pkgs.minecraft
   ];
   # Config files
-  home.file.".emacs".source = ./init.el;
+  home.file.".emacs".source = ./emacs/init.el;
+  home.file.".folders".source = ./emacs/folders;
   home.file.".config/qutebrowser/config.py".source = ./gui/qutebrowser/config.py;
 }
