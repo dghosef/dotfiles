@@ -152,7 +152,7 @@
   (interactive)
   (if (> (window-pixel-width) (window-pixel-height))
 	  (split-and-follow-vertically)
-	(split-and-follow-horizontally)))
+	(split-and-follow-horizontally))
 (global-set-key (kbd "C-<return>") 'split-along-longer-side)
 ;;; ---------------------------Aesthetics-------------------------
 ; Disable toolbar/menubar/:q
