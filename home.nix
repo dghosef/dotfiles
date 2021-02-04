@@ -60,6 +60,7 @@ in
     pkgs.emacs
     pkgs.emacs26Packages.pdf-tools
     pkgs.emacs26Packages.elpy
+    emacs26Packages.fontawesome
     pkgs.zip
     pkgs.ripgrep
     pkgs.irony-server # c-type language autocomplete
@@ -83,6 +84,8 @@ in
     pkgs.cbc
     # Gaming
     pkgs.minecraft
+    # Graphics
+    pkgs.gromit-mpx # draw on screen
   ];
   # Config files
   home.file.".emacs".source = ./emacs/init.el;

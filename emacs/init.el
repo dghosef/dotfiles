@@ -1,71 +1,164 @@
-;;; Notes
-; Guiding principles: Reproducability and portability
-; Please install git, vim, zip, etc
-; For keepass, install keepass cli or kpcli or whatever it's called
-; For spellcheck, ispell
-; For email follow instructions at https://medium.com/@enzuru/emacs-26-wanderlust-and-modern-gmail-authentication-36e1ae61471f
-; Also, remember you can M-x elmo-passwd-alist-save
-; For pdf editing follow https://github.com/politza/pdf-tools. Comment out pdf-loader-install if necessary
-; For better projectile search install ripgrep
-; For python development install python(package manager), jedi, black, autopep8, yapf, pyreadline, ipython(pip), flake8, rope
-; For c/c++/obj-c/etc install llvm, irony-server, bear
-; For taking notes/drawing the program "drawing"
-; For latex preview dvipng and 'latex'. For export also install zip
-; Enable debug messages for problems with this file
-; (setq debug-on-error t)
-;;; ---------------------------Setup package manager-------------------------
-; Set up package.el to work with MELPA
+;;; notes
+;; Guiding principles: Reproducability and portability
+;; Please install git, vim, zip, etc
+;; For keepass, install keepass cli or kpcli or whatever it's called
+;; For spotify add spotify client and id to ~/.emacs-secrets.el. Also pin spotify to browser/always have it open. Numbers are online
+;; For spellcheck, ispell
+;; For email follow instructions at https://medium.com/@enzuru/emacs-26-wanderlust-and-modern-gmail-authentication-36e1ae61471f
+;; Also, remember you can M-x elmo-passwd-alist-save
+;; For pdf editing follow https://github.com/politza/pdf-tools. Comment out pdf-loader-install if necessary
+;; For better projectile search install ripgrep
+;; For python development install python(package manager), jedi, black, autopep8, yapf, pyreadline, ipython(pip), flake8, rope
+;; For c/c++/obj-c/etc install llvm, irony-server, bear
+;; For taking notes/drawing the program "drawing"
+;; For latex preview dvipng and 'latex'. For export also install zip
+;; Enable debug messages for problems with this file
+;; (setq debug-on-error t)
+;;; ---------------------------setup package manager-------------------------
+;; Set up package.el to work with MELPA
 (require 'package)
 (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
 						 ("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
 
 
-;;; --------------------------Vim-migration/general-editing------------------------
+;;; --------------------------vim-migration/general-editing------------------------
 (setq-default tab-width 4)
 (setq-default tab-stop-list 4)
-; Autodetect indentation if possible
+;; Autodetect indentation if possible
 
 (unless (package-installed-p 'dtrt-indent)
   (package-install 'dtrt-indent))
-; Download Evil
+(dtrt-indent-global-mode 1)
+;; Download Evil
 (unless (package-installed-p 'evil)
   (package-install 'evil))
-; allow c-u scrolling in evil
+;; allow c-u scrolling in evil
 (setq evil-want-C-u-scroll t)
-; Enable Evil
-; required for evil-collection
+;; Enable Evil
+;; required for evil-collection
 (setq evil-want-keybinding nil)
 (setq evil-want-integration t)
 (require 'evil)
 (evil-mode 1)
-; Enable evil collection
+;; Enable evil collection
 (unless (package-installed-p 'evil-collection)
   (package-install 'evil-collection))
 (evil-collection-init)
 (setq evil-search-module 'evil-search)
 ;; Disable evil unwanted org indentation
 (setq evil-auto-indent nil)
-; Autosave backup directory
+;; Autosave backup directory
 (setq backup-directory-alist `(("." . "~/.emacs.d/saves")))
-; Autorefresh files
+;; Autorefresh files
 (global-auto-revert-mode)
-; set leader key in normal state
-; regular undo tree
+;; set leader key in normal state
+;; regular undo tree
 (unless (package-installed-p 'undo-tree)
   (package-install 'undo-tree))
 (require 'undo-tree)
 (global-undo-tree-mode)
 (undo-tree-mode 1)
-; Persistent undo
+;; Persistent undo
 (setq undo-tree-auto-save-history 1)
-; undo
+;; undo
 (define-key evil-normal-state-map (kbd "u") 'undo-tree-undo)
-; redo
+;; redo
 (define-key evil-normal-state-map (kbd "C-r") 'undo-tree-redo)
-; Highlight matching ({[
+;; Highlight matching ({[
 (show-paren-mode 1)
-; Redo
+
+
+;; Relative numbering
+(when (version<= "26.0.50" emacs-version )
+  (global-display-line-numbers-mode))
+(setq display-line-numbers 'visual)
+(setq display-line-numbers-type 'relative)
+
+;; which-key
+(unless (package-installed-p 'which-key)
+  (package-install 'which-key))
+(which-key-mode)
+;; snippets
+(unless (package-installed-p 'yasnippet)
+  (package-install 'yasnippet))
+(require 'yasnippet)
+(yas-global-mode 1)
+;; Multiple cursors
+(unless (package-installed-p 'evil-multiedit)
+  (package-install 'evil-multiedit))
+(require 'evil-multiedit)
+(evil-multiedit-default-keybinds)
+;; Symbol list
+(unless (package-installed-p 'imenu-list)
+  (package-install 'imenu-list))
+
+;;; ------------------------navigation---------------------------
+;; Projectile project jumping
+
+(unless (package-installed-p 'projectile)
+  (package-install 'projectile))
+(projectile-mode +1)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+(setq projectile-enable-caching t)
+;; See https://emacs.stackexchange.com/questions/16497/how-to-exclude-files-from-projectile
+(setq projectile-enable-caching t)
+;; Go to next and previous buffer
+(global-set-key (kbd "C-{") 'previous-buffer)
+(global-set-key (kbd "C-}") 'next-buffer)
+;; Jump to new split when creating it
+(defun split-and-follow-horizontally ()
+  (interactive)
+  (split-window-below)
+  (balance-windows)
+  (other-window 1))
+(global-set-key (kbd "C-x 2") 'split-and-follow-horizontally)
+
+(defun split-and-follow-vertically ()
+  (interactive)
+  (split-window-right)
+  (balance-windows)
+  (other-window 1))
+(define-key evil-normal-state-map (kbd "C-w C-v") 'split-and-follow-vertically)
+(define-key evil-normal-state-map (kbd "C-w C-s") 'split-and-follow-horizontally)
+(define-key evil-normal-state-map (kbd "C-w v") 'split-and-follow-vertically)
+(define-key evil-normal-state-map (kbd "C-w s") 'split-and-follow-horizontally)
+;; Allow C-w C-hjkl to jump windows
+(define-key evil-normal-state-map (kbd "C-w C-h") 'windmove-left)
+(define-key evil-normal-state-map (kbd "C-w C-j") 'windmove-down)
+(define-key evil-normal-state-map (kbd "C-w C-k") 'windmove-up)
+(define-key evil-normal-state-map (kbd "C-w C-l") 'windmove-right)
+;; Go to other window
+(unless (package-installed-p 'ace-window)
+  (package-install 'ace-window))
+(global-set-key (kbd "M-o") 'ace-window)
+;; Use letter keys for window switch
+(setq aw-keys '(?a ?b ?c ?d ?e ?f ?g ?h ?i))
+;; Jump to largest window
+
+;; Jump to largest window
+(defun jump-to-largest-window ()
+  "Move to the largest window"
+  (interactive)
+  ; sort windows and select largest
+  (select-window (nth 0 (sort (window-list)
+		(lambda (a b) (> (* (window-total-height a) (window-total-width a))
+							(* (window-total-height b) (window-total-width b))))))))
+		
+
+;; Smart splitting. Sorta like bpswm
+(defun split-along-longer-side ()
+  "Jump to largest window and split along its longest side."
+  (interactive)
+  (jump-to-largest-window)
+  (if (> (window-pixel-width) (window-pixel-height))
+	  (split-and-follow-vertically)
+	(split-and-follow-horizontally)))
+(global-set-key (kbd "C-c <C-return>") 'split-along-longer-side)
+;; Window resizeing
+(define-key evil-normal-state-map (kbd "+") 'enlarge-window)
+(define-key evil-normal-state-map (kbd "-") 'shrink-window)
+
 ; fuzzy find ido
 (unless (package-installed-p 'flx-ido)
   (package-install 'flx-ido))
@@ -85,103 +178,29 @@
 (ido-mode 1)
 (ido-vertical-mode 1)
 (setq ido-vertical-define-keys 'C-n-and-C-p-only)
-
-
-; Relative numbering
-(when (version<= "26.0.50" emacs-version )
-  (global-display-line-numbers-mode))
-(setq display-line-numbers 'visual)
-(setq display-line-numbers-type 'relative)
-
-; which-key
-(unless (package-installed-p 'which-key)
-  (package-install 'which-key))
-(which-key-mode)
-; snippets
-(unless (package-installed-p 'yasnippet)
-  (package-install 'yasnippet))
-(require 'yasnippet)
-(yas-global-mode 1)
-; Multiple cursors
-(unless (package-installed-p 'evil-multiedit)
-  (package-install 'evil-multiedit))
-(require 'evil-multiedit)
-(evil-multiedit-default-keybinds)
-
-;;; ------------------------Navigation---------------------------
-; Projectile project jumping
-
-(unless (package-installed-p 'projectile)
-  (package-install 'projectile))
-(projectile-mode +1)
-(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-(setq projectile-enable-caching t)
-; See https://emacs.stackexchange.com/questions/16497/how-to-exclude-files-from-projectile
-(setq projectile-enable-caching t)
-; Go to next and previous buffer
-(global-set-key (kbd "C-{") 'previous-buffer)
-(global-set-key (kbd "C-}") 'next-buffer)
-; Jump to new split when creating it
-(defun split-and-follow-horizontally ()
-  (interactive)
-  (split-window-below)
-  (balance-windows)
-  (other-window 1))
-(global-set-key (kbd "C-x 2") 'split-and-follow-horizontally)
-
-(defun split-and-follow-vertically ()
-  (interactive)
-  (split-window-right)
-  (balance-windows)
-  (other-window 1))
-(define-key evil-normal-state-map (kbd "C-w C-v") 'split-and-follow-vertically)
-(define-key evil-normal-state-map (kbd "C-w C-s") 'split-and-follow-horizontally)
-(define-key evil-normal-state-map (kbd "C-w v") 'split-and-follow-vertically)
-(define-key evil-normal-state-map (kbd "C-w s") 'split-and-follow-horizontally)
-; Allow C-w C-hjkl to jump windows
-(define-key evil-normal-state-map (kbd "C-w C-h") 'windmove-left)
-(define-key evil-normal-state-map (kbd "C-w C-j") 'windmove-down)
-(define-key evil-normal-state-map (kbd "C-w C-k") 'windmove-up)
-(define-key evil-normal-state-map (kbd "C-w C-l") 'windmove-right)
-;; Go to other window
-(unless (package-installed-p 'ace-window)
-  (package-install 'ace-window))
-(define-key evil-normal-state-map (kbd "C-w C-d") 'ace-window)
-(define-key evil-normal-state-map (kbd "C-w d") 'ace-window)
-; Smart splitting. Sorta like bpswm
-(defun split-along-longer-side ()
-  (interactive)
-  (if (> (window-pixel-width) (window-pixel-height))
-	  (split-and-follow-vertically)
-	(split-and-follow-horizontally)))
-(global-set-key (kbd "M-RET") 'split-along-longer-side)
-;;; ---------------------------Aesthetics-------------------------
-; Disable toolbar/menubar/:q
+  
+;;; ---------------------------aesthetics-------------------------
+;; Disable toolbar/menubar/:q
 (toggle-scroll-bar -1)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 
-; Theme
+;; Theme
 (unless (package-installed-p 'solarized-theme)
   (package-install 'solarized-theme))
 (load-theme 'solarized-dark t)
-; Highlight long code
-(setq-default
- whitespace-line-column 80
- whitespace-style       '(face lines-tail))
-(add-hook 'prog-mode-hook #'whitespace-mode) ; Only when we're actually coding
 
-;;; ------------------------------ORG-mode-------------------------
-; Live preview in eww
+;;; ------------------------------org-mode-------------------------
+;; Live preview in eww
 (unless (package-installed-p 'org-preview-html)
   (package-install 'org-preview-html))
-; pretty bullets :)
+;; pretty bullets :)
 (unless (package-installed-p 'org-bullets)
   (package-install 'org-bullets))
 (require 'org-bullets)
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 (setq org-startup-with-inline-images t) ; show inline images
-; Start drawing software and insert new drawing into current line
+;; Start drawing software and insert new drawing into current line
 (defun create-img ()
   "Prompt for a filename, then call up drawing to create an image. Add to org mode doc."
   (interactive)
@@ -204,9 +223,9 @@
 (setq org-agenda-start-on-weekday nil) ; Make agenda start on current day
 (setq org-todo-keyword-faces
       '(("URGENT" . org-warning)))
-; Open agenda
+;; Open agenda
 (global-set-key (kbd "C-c a" ) 'org-agenda)
-; Bindings to common iles
+;; Bindings to common iles
 (global-set-key (kbd "C-c f o" )
 				(lambda () (interactive)
 				  (find-file (concat org-directory "lists.org"))))
@@ -216,12 +235,12 @@
 (global-set-key (kbd "C-c f h" )
 				(lambda () (interactive)
 				  (find-file "~/.config/nixpkgs/home.nix")))
-; Snippets
+;; Snippets
 (setq org-agenda-restore-windows-after-quit t)
 (setq org-default-notes-file (concat org-directory "lists.org"))
 (global-set-key (kbd "C-c c") 'org-capture)
-; Required to get org and yas working.
-; see https://orgmode.org/manual/Conflicts.html#Conflicts
+;; Required to get org and yas working.
+;; see https://orgmode.org/manual/Conflicts.html#Conflicts
 (add-hook 'org-mode-hook
 		  (lambda ()
 			(setq-local yas/trigger-key [tab])
@@ -239,6 +258,8 @@
 '(yas-define-snippets 'org-mode
 					 '(("bmatrix" "\\begin{bmatrix}\n$1\n\\end{bmatrix}" "Insert a latex bmatrix")
 					   ("bmx" "\\begin{bmatrix}$1\\end{bmatrix}$2" "Insert a latex bmatrix")
+					   ("pd" "\\frac{\\partial $1}{\\partial $2}" "Insert a latex partial derivative")
+					   ("\$pd" "\$\\frac{\\partial $1}{\\partial $2}" "Insert a latex pd part 2")
 					   ("$bmx" "\$\\begin{bmatrix}$1\\end{bmatrix}$2\$" "Insert a latex bmatrix pt 2")
 					   ("begin" "\\begin{$1}\n$2\n\\end{$1}" "Begin stuff")
 					   ("gather" "\\begin{gather*}\n$1\n\\end{gather*}" "Begin stuff")
@@ -247,8 +268,28 @@
 					   ("*" "\\cdot" "dot product")
 					   ("fourier" "\\frac{v \\cdot v_i}{v_i \\cdot v_i} * v_i" "Fourier formula")
 					   ("equation" "\\begin{equation*}\n\\begin{align*}\n$1\n\\end{align*}\n\\end{equation*}\n" "Insert latex code"))))
-;;; ----------------------PDF--------------------------
-; If pdftools isn't installed it uses doc-view mode
+;;; ---------------------spotify----------------------
+;; Settings
+(when (file-exists-p "~/.emacs-secrets.el")
+  (unless (package-installed-p 'simple-httpd)
+	(package-install 'simple-httpd))
+  (load "~/.emacs-secrets")
+  (when (not (file-exists-p "~/.emacs.d/spotify"))
+	  (shell-command "git clone https://github.com/danielfm/spotify.el ~/.emacs.d/spotify"))
+  (add-to-list 'load-path "~/.emacs.d/spotify")
+  (require 'spotify)
+  (setq spotify-oauth2-client-secret spotify-secret)
+  (setq spotify-oauth2-client-id spotify-id)
+  (setq spotify-transport 'connect)
+  (global-set-key (kbd "C-j" ) 'spotify-volume-down)
+  (global-set-key (kbd "C-k" ) 'spotify-volume-up)
+  (global-set-key (kbd "M-p M-d" ) 'spotify-select-device)
+  (global-set-key (kbd "C-M-;" ) 'spotify-toggle-play)
+  (global-set-key (kbd "M-p M-n" ) 'spotify-next-track)
+  (global-set-key (kbd "M-p M-p" ) 'spotify-previous-track))
+
+;;; ----------------------pdf--------------------------
+;; If pdftools isn't installed it uses doc-view mode
 (evil-define-key 'normal doc-view-minor-mode-map
   "h" 'doc-view-previous-page
   "j" (lambda () (interactive) (doc-view-next-line-or-next-page 5))
@@ -262,15 +303,15 @@
   (package-install 'pdf-tools))
 (pdf-loader-install)
 
-;;; --------------------------------Magit--------------------------
+;;; --------------------------------magit--------------------------
 (unless (package-installed-p 'magit)
   (package-install 'magit))
 
-;;; ----------------------------Dired------------------------
+;;; ----------------------------dired------------------------
 (setq delete-by-moving-to-trash t)
 (setq trash-directory "~/.trash")
 
-;;; --------------------------Eww--------------------
+;;; --------------------------eww--------------------
 (defun eww-new ()
   "Open eww in new buffer"
   (interactive)
@@ -278,8 +319,9 @@
     (switch-to-buffer (generate-new-buffer (concat "eww - " url)))
     (eww-mode)
     (eww url)))
-(global-set-key (kbd "C-c s B" ) 'eww-new)
 (global-set-key (kbd "C-c s b" ) 'eww)
+(global-set-key (kbd "C-c s B" ) 'eww-new)
+(evil-collection-define-key 'normal 'eww-mode-map "O" 'eww-new)
 (setq eww-search-prefix "https://www.google.com/search?q=")
 
 ;;; --------------------mail------------------------
@@ -336,7 +378,7 @@
   (interactive)
   (find-file "~/Dropbox/Passwords.kdbx"))
 (global-set-key (kbd "C-c s p") 'open-passwords)
-;;; -----------------------Latex----------------------------
+;;; -----------------------latex----------------------------
 (unless (package-installed-p 'auctex)
   (package-install 'auctex))
 (setq TeX-auto-save t)
@@ -345,13 +387,14 @@
 (add-hook 'LaTeX-mode-hook 'visual-line-mode)
 (add-hook 'LaTeX-mode-hook 'flyspell-mode)
 (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+(setq-default TeX-engine 'luatex)
 
 (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
 (setq reftex-plug-into-AUCTeX t)
+(setq TeX-view-program-selection '((output-pdf "PDF Tools")))
 
 
-
-;;; --------------------------------EShell-----------------------------------
+;;; --------------------------------eshell-----------------------------------
 (defun ecd ()
   "
   Sets the eshell directory to the current buffer
@@ -377,8 +420,8 @@
   )
 
 (define-key evil-normal-state-map (kbd "SPC SPC") 'start_small_shell)
-; aliases - see https://emacs.stackexchange.com/questions/48843/how-to-store-an-eshell-alias-in-init-el
-; Not recommended to do it this way but I wanted everything in this file
+;; aliases - see https://emacs.stackexchange.com/questions/48843/how-to-store-an-eshell-alias-in-init-el
+;; Not recommended to do it this way but I wanted everything in this file
 (defun eshell-add-aliases ()
   "Doc-string."
   (dolist (var '(("ipython" "ipython --simple-prompt -i --pprint $*")
@@ -390,15 +433,15 @@
 (add-hook 'eshell-post-command-hook 'eshell-add-aliases)
 
 (global-set-key (kbd "C-c s s" ) 'eshell)
-;;; -------------------------------PYTHON-------------------------------------
-; Download elpy - requires python, jedi, black, autopep8, yapf(install w/ pip)
+;;; -------------------------------python-------------------------------------
+;; Download elpy - requires python, jedi, black, autopep8, yapf(install w/ pip)
 (unless (package-installed-p 'elpy)
   (package-install 'elpy))
-; Enable elpy
+;; Enable elpy
 (elpy-enable)
-; Disable elpy vertical lines
+;; Disable elpy vertical lines
 (add-hook 'elpy-mode-hook (lambda () (highlight-indentation-mode -1)))
-; Make default shell ipython if possible - requires ipython, pyreadline
+;; Make default shell ipython if possible - requires ipython, pyreadline
 (when (executable-find "ipython")
   (setq python-shell-interpreter "ipython"))
 (setq python-shell-interpreter-args "--simple-prompt --pprint -i")
@@ -407,18 +450,20 @@
 (setq elpy-rpc-virtualenv-path 'system) ; Don't use a venv by default
 
 
-;;; -------------------------------C/C++/OBJ-C-------------------------------------
-; flycheck syntax check install
+;;; -------------------------------c/c++/obj-c-------------------------------------
+;; Bracket indentation
+(setq c-default-style "bsd")
+;; flycheck syntax check install
 (unless (package-installed-p 'flycheck)
   (package-install 'flycheck))
 (add-hook 'after-init-hook #'global-flycheck-mode) ; enable
-; company-mode autocomplete
+;; company-mode autocomplete
 (unless (package-installed-p 'company)
   (package-install 'company))
 (add-hook 'after-init-hook 'global-company-mode)
 (setq company-dabbrev-downcase 0)
 (setq company-idle-delay 0)
-; Download irony - requires llvm and irony(yay -S irony-mode) and bear(compile database)
+;; Download irony - requires llvm and irony(yay -S irony-mode) and bear(compile database)
 (unless (package-installed-p 'irony) ; autocomplete
   (package-install 'irony))
 (eval-after-load 'company
@@ -435,7 +480,7 @@
 (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
 
 
-;;; ------------------------NIXlang----------------------------
+;;; ------------------------nixlang----------------------------
 (unless (package-installed-p 'nix-mode)
   (package-install 'nix-mode))
 (require 'nix-mode)
