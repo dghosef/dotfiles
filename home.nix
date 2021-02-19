@@ -60,12 +60,13 @@ in
   services.dropbox.enable = true;
   nixpkgs.config.allowUnfree = true;
   home.packages = [
-    # Misc
+    # General
     pkgs.zip
     pkgs.unzip
-    vim
-    firefox
-    git
+    pkgs.neovim
+    pkgs.xsane
+    pkgs.git
+    xdg_utils
     # Web
     pkgs.firefox
     pkgs.google-chrome
