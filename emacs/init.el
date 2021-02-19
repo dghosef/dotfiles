@@ -2,12 +2,13 @@
 ;; Guiding principles: Reproducability and portability
 ;; Please install git, vim, zip, etc
 ;; For keepass, install keepass cli or kpcli or whatever it's called
+;; vterm - cmake, libtool-bin, libvterm
 ;; For spotify add spotify client and id to ~/.emacs-secrets.el. Also pin spotify to browser/always have it open. Numbers are online
 ;; For spellcheck, ispell
 ;; For email follow instructions at https://medium.com/@enzuru/emacs-26-wanderlust-and-modern-gmail-authentication-36e1ae61471f
 ;; Also, remember you can M-x elmo-passwd-alist-save
 ;; For pdf editing follow https://github.com/politza/pdf-tools. Comment out pdf-loader-install if necessary
-;; For better projectile search install ripgrep
+;; For better projectile search? and dumbjump install ripgrep
 ;; For python development install python(package manager), jedi, black, autopep8, yapf, pyreadline, ipython(pip), flake8, rope
 ;; For c/c++/obj-c/etc install llvm, irony-server, bear
 ;; For taking notes/drawing the program "drawing"
@@ -92,6 +93,21 @@
 ;; Symbol list
 (unless (package-installed-p 'imenu-list)
   (package-install 'imenu-list))
+ 
+(setq imenu-list-auto-resize t)
+(global-set-key (kbd "C-'") #'imenu-list-smart-toggle)
+(setq imenu-list-focus-after-activation t)
+;; Dumb Jump
+
+(unless (package-installed-p 'dumb-jump)
+  (package-install 'dumb-jump))
+(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+;; Warn when lines are too long
+(require 'whitespace)
+(setq whitespace-line-column 100) ;; limit line length
+(setq whitespace-style '(face lines-tail))
+
+(add-hook 'prog-mode-hook 'whitespace-mode)
 
 ;;; ------------------------navigation---------------------------
 ;; Projectile project jumping
@@ -188,12 +204,13 @@
 ;; Theme
 (unless (package-installed-p 'solarized-theme)
   (package-install 'solarized-theme))
+(unless (package-installed-p 'doom-themes)
+  (package-install 'doom-themes))
 (load-theme 'solarized-dark t)
 
 ;;; ------------------------------org-mode-------------------------
-;; Live preview in eww
-(unless (package-installed-p 'org-preview-html)
-  (package-install 'org-preview-html))
+;; Spellcheck
+(add-hook 'org-mode-hook 'flyspell-mode)
 ;; pretty bullets :)
 (unless (package-installed-p 'org-bullets)
   (package-install 'org-bullets))
@@ -393,6 +410,9 @@
 (setq reftex-plug-into-AUCTeX t)
 (setq TeX-view-program-selection '((output-pdf "PDF Tools")))
 
+;;; --------------------------vterm-------------------------------
+(unless (package-installed-p 'vterm)
+  (package-install 'vterm))
 
 ;;; --------------------------------eshell-----------------------------------
 (defun ecd ()

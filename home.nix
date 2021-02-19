@@ -3,6 +3,26 @@
 
 with pkgs;
 let
+  my-python-packages = python-packages: with python-packages; [
+    # FPL team generator
+    pandas
+    requests
+    pulp
+    # Emacs python dev
+    black
+    jedi
+    yapf
+    gnureadline
+    ipython
+    pep8
+    flake8
+    rope
+    autopep8
+    # 107e
+    pyserial
+    xmodem
+  ]; 
+    python-with-my-packages = python3.withPackages my-python-packages;
   allPlatformImports = [
     ./shell/git.nix
     ./shell/fish.nix
@@ -43,6 +63,9 @@ in
     # Misc
     pkgs.zip
     pkgs.unzip
+    vim
+    firefox
+    git
     # Web
     pkgs.firefox
     pkgs.google-chrome
@@ -56,27 +79,30 @@ in
     pkgs.gimp
     pkgs.krita
     pkgs.drawing
-    # Emacs(try to keep most of config in init.el so it's portable)
+    # General C-lang Dev
+    pkgs.cmake
+    pkgs.gnumake
+    pkgs.libtool
+    pkgs.gdb
+    pkgs.clang
+    pkgs.bear
+    # Emacs
     pkgs.emacs
+    pkgs.pandoc
     pkgs.emacs26Packages.pdf-tools
     pkgs.emacs26Packages.elpy
-    emacs26Packages.fontawesome
-    pkgs.zip
     pkgs.ripgrep
     pkgs.irony-server # c-type language autocomplete
     pkgs.texlive.combined.scheme-full # latex
     pkgs.ispell
-    # C-langs
-    pkgs.bear
-    pkgs.gdb
-    pkgs.clang
+    pkgs.readline
     # 107e
+    pkgs.saleae-logic
     pkgs.screen
     pkgs.binutils
-    pkgs.dpkg
-    pkgs.patchelf
-    pkgs.readline
     pkgs.desktop-file-utils
+    # Python
+    python-with-my-packages
     # Communication
     pkgs.zoom-us
     pkgs.discord
