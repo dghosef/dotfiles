@@ -66,7 +66,7 @@ in
     pkgs.neovim
     pkgs.xsane
     pkgs.git
-    xdg_utils
+    pkgs.xdg_utils
     # Web
     pkgs.firefox
     pkgs.google-chrome
