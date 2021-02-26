@@ -47,7 +47,7 @@ with pkgs;
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-  
+
 
   # -----------------Location/Keyboard-----------------
   # Set your time zone.
@@ -83,8 +83,15 @@ with pkgs;
   # Disable shutdown in power key
   services.logind.extraConfig = "HandlePowerKey=suspend";
   services.logind.lidSwitch = "ignore";
-  # Enable bluetooth
+  # Enable bluetooth(really spotty right now)
   # hardware.bluetooth.enable = true;
+  # Switch to headphones by default
+  boot.extraModprobeConfig = ''
+    alias snd-card-0 snd-hda-intel
+    alias sound-slot-0 snd-hda-intel
+    options snd-hda-intel model=dell-m4-1 enable_msi=1
+'';
+
 
   # ------------------User Configuration----------------
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -137,6 +144,8 @@ with pkgs;
     lxqt.pavucontrol-qt
     arandr
     networkmanagerapplet
+    # Printing
+    system-config-printer
   ];
   environment.variables.EDITOR = "termite";
   #  --------------------------Virtualbox-------------------
@@ -146,20 +155,20 @@ with pkgs;
   # ---------------------------X-Server-----------------------
   services.xserver = {
     enable = true;
-  # ======================HARDWARE-SPECIFIC TO MY ZENBOOK DUO - COMMENT OUT ON OTHER SYSTEMS=======================
+    # ======================HARDWARE-SPECIFIC TO MY ZENBOOK DUO - COMMENT OUT ON OTHER SYSTEMS=======================
     videoDrivers = [ "nvidia" ];
-  # ======================HARDWARE-SPECIFIC TO MY ZENBOOK DUO - COMMENT OUT ON OTHER SYSTEMS=======================
+    # ======================HARDWARE-SPECIFIC TO MY ZENBOOK DUO - COMMENT OUT ON OTHER SYSTEMS=======================
 
 
     desktopManager = {
       xterm.enable = false;
     };
-   
+
     displayManager = {
-        defaultSession = "none+i3";
-        lightdm = {
-          enable = true;
-          background = ./lock.jpg;
+      defaultSession = "none+i3";
+      lightdm = {
+        enable = true;
+        background = ./lock.jpg;
       };
     };
 

@@ -108,6 +108,11 @@
 (setq whitespace-style '(face lines-tail))
 
 (add-hook 'prog-mode-hook 'whitespace-mode)
+;; Edit in firefox
+(unless (package-installed-p 'atomic-chrome)
+  (package-install 'atomic-chrome))
+(require 'atomic-chrome)
+(atomic-chrome-start-server)
 
 ;;; ------------------------navigation---------------------------
 ;; Projectile project jumping
@@ -242,7 +247,7 @@
       '(("URGENT" . org-warning)))
 ;; Open agenda
 (global-set-key (kbd "C-c a" ) 'org-agenda)
-;; Bindings to common iles
+;; Bindings to common files
 (global-set-key (kbd "C-c f o" )
 				(lambda () (interactive)
 				  (find-file (concat org-directory "lists.org"))))
@@ -252,6 +257,9 @@
 (global-set-key (kbd "C-c f h" )
 				(lambda () (interactive)
 				  (find-file "~/.config/nixpkgs/home.nix")))
+(global-set-key (kbd "C-c f c" )
+				(lambda () (interactive)
+				  (find-file (concat org-directory "~/.config/nixpkgs/nixos/configuration.nix"))))
 ;; Snippets
 (setq org-agenda-restore-windows-after-quit t)
 (setq org-default-notes-file (concat org-directory "lists.org"))

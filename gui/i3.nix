@@ -26,6 +26,7 @@ in {
         { command = "dropbox start"; notification = false; always = true; }
         { command = "nm-applet"; notification = false; always = true; }
         { command = "pactl load-module module-switch-on-connect"; notification = false; always = true; }
+        { command = "xcompmgr -c -l0 -t0 -r0 -o.00"; notification = false; always = true; }
       ];
 
       bars = [

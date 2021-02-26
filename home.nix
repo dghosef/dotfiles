@@ -67,6 +67,8 @@ in
     pkgs.xsane
     pkgs.git
     pkgs.xdg_utils
+    # Audio
+    pkgs.audacity
     # Web
     pkgs.firefox
     pkgs.google-chrome
@@ -106,6 +108,7 @@ in
     python-with-my-packages
     # Communication
     pkgs.zoom-us
+    pkgs.xcompmgr
     pkgs.discord
     # FPL team generator
     pkgs.cbc
