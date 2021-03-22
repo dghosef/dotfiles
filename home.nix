@@ -57,7 +57,7 @@ in
   # changes in each release.
   home.stateVersion = "21.03";
   # Check if we're in a linux system
-  imports = if builtins.pathExists /etc/home
+  imports = if builtins.pathExists /home
             then (allPlatformImports ++ linixImports)
             else allPlatformImports;
   services.dropbox.enable = true;
