@@ -63,6 +63,7 @@ in
   nixpkgs.config.allowUnfree = true;
   home.packages = [
     # General
+    pkgs.system-config-printer
     pkgs.zip
     pkgs.unzip
     pkgs.neovim
@@ -122,6 +123,19 @@ in
     pkgs.minecraft
     # Graphics
     pkgs.gromit-mpx # draw on screen
+    pkgs.scrot
+    pkgs.i3blocks-gaps
+    pkgs.arandr
+    pkgs.networkmanagerapplet
+    # libvirt
+    pkgs.virt-manager
+    pkgs.qemu
+    pkgs.kvm
+    pkgs.spice
+    pkgs.spice-gtk
+    pkgs.spice-up
+    # Steam
+    pkgs.steam-run-native
   ];
   # Config files
   home.file.".emacs".source = ./emacs/init.el;

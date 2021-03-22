@@ -128,25 +128,9 @@ with pkgs;
   virtualisation.libvirtd.enable = true;
   programs.dconf.enable = true;
   environment.systemPackages = with pkgs; [
-    # libvirt
-    virt-manager
-    qemu
-    kvm
-    spice
-    spice-gtk
-    spice-up
-    # Steam
-    steam-run-native
-    # gui
     lxappearance
-    scrot
-    i3blocks-gaps
     acpi
     lxqt.pavucontrol-qt
-    arandr
-    networkmanagerapplet
-    # Printing
-    system-config-printer
   ];
   environment.variables.EDITOR = "termite";
   #  --------------------------Virtualbox-------------------
