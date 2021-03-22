@@ -21,6 +21,8 @@ let
     # 107e
     pyserial
     xmodem
+    # typing test cheating
+    pynput
   ]; 
     python-with-my-packages = python3.withPackages my-python-packages;
   allPlatformImports = [
@@ -86,8 +88,9 @@ in
     pkgs.cmake
     pkgs.gnumake
     pkgs.libtool
+    pkgs.SDL
     pkgs.gdb
-    pkgs.clang
+    pkgs.gcc
     pkgs.bear
     # Emacs
     pkgs.emacs
@@ -104,6 +107,9 @@ in
     pkgs.screen
     pkgs.binutils
     pkgs.desktop-file-utils
+    pkgs.libGL
+    pkgs.libGL_driver
+    pkgs.libGLU
     # Python
     python-with-my-packages
     # Communication

@@ -77,11 +77,12 @@ with pkgs;
   # Enable sound.
   sound.enable = true;
   hardware.pulseaudio.enable = true;
+  hardware.pulseaudio.extraConfig = "unload-module module-switch-on-port-available";
   # hardware.pulseaudio.package = pkgs.pulseaudioFull;
   # Enable touchpad support (enabled default in most desktopManager).
   services.xserver.libinput.enable = true;
   # Disable shutdown in power key
-  services.logind.extraConfig = "HandlePowerKey=suspend";
+  services.logind.extraConfig = ''HandlePowerKey=suspend'';
   services.logind.lidSwitch = "ignore";
   # Enable bluetooth(really spotty right now)
   # hardware.bluetooth.enable = true;

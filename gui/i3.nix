@@ -25,7 +25,6 @@ in {
         { command = "feh --bg-fill ${./top.png}"; notification = false; always = true; }
         { command = "dropbox start"; notification = false; always = true; }
         { command = "nm-applet"; notification = false; always = true; }
-        { command = "pactl load-module module-switch-on-connect"; notification = false; always = true; }
         { command = "xcompmgr -c -l0 -t0 -r0 -o.00"; notification = false; always = true; }
       ];
 
@@ -88,8 +87,8 @@ in {
   
         # Browsers - ws 2
         "${mod}+b" = "workspace number 2";
-        "${mod}+Shift+b" = "exec --no-startup-id qutebrowser";
         "${mod}+Shift+f" = "exec --no-startup-id firefox";
+        "${mod}+Shift+b" = "exec --no-startup-id firefox";
         
         # Discord - ws 3
         "${mod}+d" = "workspace number 3";
@@ -113,8 +112,11 @@ in {
 
         # Scratchpad workspace- ws 10
         "${mod}+s" = "workspace number 10";
+
+        # Scratchpad
+        "${mod}+Shift+BackSpace" = "move scratchpad";
+        "${mod}+backslash" = "scratchpad show";
       };
     };
   };
 }
-

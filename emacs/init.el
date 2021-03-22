@@ -113,8 +113,11 @@
   (package-install 'atomic-chrome))
 (require 'atomic-chrome)
 (atomic-chrome-start-server)
-
 ;;; ------------------------navigation---------------------------
+
+;; Sentences don't need 2 spaces after.
+(setf sentence-end-double-space nil)
+
 ;; Projectile project jumping
 
 (unless (package-installed-p 'projectile)
