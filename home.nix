@@ -31,7 +31,7 @@ let
     ./shell/tmux.nix
     ./shell/vim.nix
   ];
-  nixImports = [
+  linixImports = [
     ./gui/i3.nix
     ./gui/locker.nix
     ./gui/rofi.nix
@@ -56,8 +56,9 @@ in
   # the Home Manager release notes for a list of state version
   # changes in each release.
   home.stateVersion = "21.03";
-  imports = if builtins.pathExists /etc/nixos
-            then (allPlatformImports ++ nixImports)
+  # Check if we're in a linux system
+  imports = if builtins.pathExists /etc/home
+            then (allPlatformImports ++ linixImports)
             else allPlatformImports;
   services.dropbox.enable = true;
   nixpkgs.config.allowUnfree = true;
@@ -80,10 +81,10 @@ in
     pkgs.keepassxc
     pkgs.kpcli
     pkgs.wget
+  
     # Images
     pkgs.feh
     pkgs.gimp
-    pkgs.krita
     pkgs.drawing
     # General C-lang Dev
     pkgs.cmake
