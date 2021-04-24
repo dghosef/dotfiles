@@ -93,7 +93,7 @@ in {
         
         # Discord - ws 3
         "${mod}+d" = "workspace number 3";
-        "${mod}+Shift+d" = "exec --no-startup-id Discord";
+        "${mod}+Shift+d" = "exec --no-startup-id firefox --new-window discord.com/app";
   
         # Termite - ws 4
         "${mod}+t" = "workspace number 4";

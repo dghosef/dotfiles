@@ -97,8 +97,6 @@ in
     # Emacs
     pkgs.emacs
     pkgs.pandoc
-    pkgs.emacs26Packages.pdf-tools
-    pkgs.emacs26Packages.elpy
     pkgs.ripgrep
     pkgs.irony-server # c-type language autocomplete
     pkgs.texlive.combined.scheme-full # latex
@@ -115,7 +113,6 @@ in
     # Python
     python-with-my-packages
     # Communication
-    pkgs.zoom-us
     pkgs.xcompmgr
     pkgs.discord
     # FPL team generator
@@ -142,4 +139,10 @@ in
   home.file.".emacs".source = ./emacs/init.el;
   home.file.".folders".source = ./emacs/folders;
   home.file.".config/qutebrowser/config.py".source = ./gui/qutebrowser/config.py;
+  # Make that use python readline apps use vi mode
+  programs.readline.extraConfig = ''
+    set editing-mode vi
+    set keymap vi
+    set convert-meta on
+    '';
 }

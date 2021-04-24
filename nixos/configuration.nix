@@ -133,10 +133,6 @@ with pkgs;
     lxqt.pavucontrol-qt
   ];
   environment.variables.EDITOR = "termite";
-  #  --------------------------Virtualbox-------------------
-  virtualisation.virtualbox.host.enable = true;
-  users.extraGroups.vboxusers.members = [ "user-with-access-to-virtualbox" ];
-  virtualisation.virtualbox.host.enableExtensionPack = true;
   # ---------------------------X-Server-----------------------
   services.xserver = {
     enable = true;
