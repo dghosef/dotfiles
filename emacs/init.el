@@ -5,8 +5,6 @@
 ;; vterm - cmake, libtool-bin, libvterm
 ;; For spotify add spotify client and id to ~/.emacs-secrets.el. Also pin spotify to browser/always have it open. Numbers are online
 ;; For spellcheck, ispell
-;; For email follow instructions at https://medium.com/@enzuru/emacs-26-wanderlust-and-modern-gmail-authentication-36e1ae61471f
-;; Also, remember you can M-x elmo-passwd-alist-save
 ;; For pdf editing follow https://github.com/politza/pdf-tools. Comment out pdf-loader-install if necessary
 ;; For better projectile search? and dumbjump install ripgrep
 ;; For python development install python(package manager), jedi, black, autopep8, yapf, pyreadline, ipython(pip), flake8, rope
@@ -24,6 +22,7 @@
 
 
 ;;; --------------------------vim-migration/general-editing------------------------
+(display-time)
 (setq-default tab-width 4)
 (setq-default tab-stop-list 4)
 ;; Autodetect indentation if possible
@@ -34,6 +33,9 @@
 ;; Download Evil
 (unless (package-installed-p 'evil)
   (package-install 'evil))
+;; Visual vertical movement(for lines that wrap)
+(setq evil-respect-visual-line-mode t)
+(global-visual-line-mode)
 ;; allow c-u scrolling in evil
 (setq evil-want-C-u-scroll t)
 ;; Enable Evil
@@ -73,8 +75,10 @@
 ;; Relative numbering
 (when (version<= "26.0.50" emacs-version )
   (global-display-line-numbers-mode))
-(setq display-line-numbers 'visual)
-(setq display-line-numbers-type 'relative)
+;; Not sure which of these is redundant
+;; Makes lines relative and work w/ folding
+(setq display-line-numbers-type 'visual)
+(setq display-line-numbers-mode 'visual)
 
 ;; which-key
 (unless (package-installed-p 'which-key)
@@ -98,7 +102,6 @@
 (global-set-key (kbd "C-'") #'imenu-list-smart-toggle)
 (setq imenu-list-focus-after-activation t)
 ;; Dumb Jump
-
 (unless (package-installed-p 'dumb-jump)
   (package-install 'dumb-jump))
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
@@ -179,7 +182,7 @@
 	  (split-and-follow-vertically)
 	(split-and-follow-horizontally)))
 (global-set-key (kbd "C-c <C-return>") 'split-along-longer-side)
-;; Window resizeing
+;; Window resize/resizing vertical
 (define-key evil-normal-state-map (kbd "+") 'enlarge-window)
 (define-key evil-normal-state-map (kbd "-") 'shrink-window)
 
@@ -240,9 +243,6 @@
 (setq org-log-done 'time)
 ;; org indentation
 (setq org-startup-indented t)
-;; abbreviate TODO and DONE
-(setq org-todo-keywords
-      '((sequence "LATER(l)" "TODO(t)" "URGENT(u)" "|" "DONE(d)")))
 (setq org-directory "~/Dropbox/org/")
 (setq org-agenda-files (list (concat org-directory "lists.org"))) ; Only look at todo list
 (setq org-agenda-start-on-weekday nil) ; Make agenda start on current day
@@ -263,6 +263,9 @@
 (global-set-key (kbd "C-c f c" )
 				(lambda () (interactive)
 				  (find-file (concat org-directory "~/.config/nixpkgs/nixos/configuration.nix"))))
+(global-set-key (kbd "C-c f s" ) ;; Go to the home directory of dired
+				(lambda () (interactive)
+				  (find-file "/ssh:dghosef@myth.stanford.edu:")))
 ;; Snippets
 (setq org-agenda-restore-windows-after-quit t)
 (setq org-default-notes-file (concat org-directory "lists.org"))
@@ -296,25 +299,6 @@
 					   ("*" "\\cdot" "dot product")
 					   ("fourier" "\\frac{v \\cdot v_i}{v_i \\cdot v_i} * v_i" "Fourier formula")
 					   ("equation" "\\begin{equation*}\n\\begin{align*}\n$1\n\\end{align*}\n\\end{equation*}\n" "Insert latex code"))))
-;;; ---------------------spotify----------------------
-;; Settings
-(when (file-exists-p "~/.emacs-secrets.el")
-  (unless (package-installed-p 'simple-httpd)
-	(package-install 'simple-httpd))
-  (load "~/.emacs-secrets")
-  (when (not (file-exists-p "~/.emacs.d/spotify"))
-	  (shell-command "git clone https://github.com/danielfm/spotify.el ~/.emacs.d/spotify"))
-  (add-to-list 'load-path "~/.emacs.d/spotify")
-  (require 'spotify)
-  (setq spotify-oauth2-client-secret spotify-secret)
-  (setq spotify-oauth2-client-id spotify-id)
-  (setq spotify-transport 'connect)
-  (global-set-key (kbd "C-j" ) 'spotify-volume-down)
-  (global-set-key (kbd "C-k" ) 'spotify-volume-up)
-  (global-set-key (kbd "M-p M-d" ) 'spotify-select-device)
-  (global-set-key (kbd "C-M-;" ) 'spotify-toggle-play)
-  (global-set-key (kbd "M-p M-n" ) 'spotify-next-track)
-  (global-set-key (kbd "M-p M-p" ) 'spotify-previous-track))
 
 ;;; ----------------------pdf--------------------------
 ;; If pdftools isn't installed it uses doc-view mode
@@ -338,6 +322,7 @@
 ;;; ----------------------------dired------------------------
 (setq delete-by-moving-to-trash t)
 (setq trash-directory "~/.trash")
+(add-hook 'dired-mode-hook 'auto-revert-mode) ;; autorefresh
 
 ;;; --------------------------eww--------------------
 (defun eww-new ()
@@ -352,51 +337,6 @@
 (evil-collection-define-key 'normal 'eww-mode-map "O" 'eww-new)
 (setq eww-search-prefix "https://www.google.com/search?q=")
 
-;;; --------------------mail------------------------
-(global-set-key (kbd "C-c s m" ) 'wl)
-(unless (package-installed-p 'wanderlust)
-  (package-install 'wanderlust))
-(autoload 'wl "wl" "Wanderlust" t)
-(autoload 'wl-draft "wl-draft" "Write draft with Wanderlust." t)
-
-;; IMAP
-(setq elmo-imap4-default-server "imap.gmail.com")
-(setq elmo-imap4-default-user "dghosef@gmail.com") 
-(setq elmo-imap4-default-authenticate-type 'clear) 
-(setq elmo-imap4-default-port '993)
-(setq elmo-imap4-default-stream-type 'ssl)
-
-(setq elmo-imap4-use-modified-utf7 t) 
-
-;; SMTP
-(setq wl-smtp-connection-type 'starttls)
-(setq wl-smtp-posting-port 587)
-(setq wl-smtp-authenticate-type "plain")
-(setq wl-smtp-posting-user "dghosef")
-(setq wl-smtp-posting-server "smtp.gmail.com")
-(setq wl-local-domain "gmail.com")
-
-(setq wl-default-folder "%inbox")
-(setq wl-default-spec "%")
-(setq wl-draft-folder "%[Gmail]/Drafts") ; Gmail IMAP
-(setq wl-trash-folder "%[Gmail]/Trash")
-
-(setq wl-folder-check-async t) 
-
-(setq elmo-imap4-use-modified-utf7 t)
-
-(autoload 'wl-user-agent-compose "wl-draft" nil t)
-(if (boundp 'mail-user-agent)
-    (setq mail-user-agent 'wl-user-agent))
-(if (fboundp 'define-mail-user-agent)
-    (define-mail-user-agent
-      'wl-user-agent
-      'wl-user-agent-compose
-      'wl-draft-send
-      'wl-draft-kill
-      'mail-send-hook))
-
-(setq wl-from "Joseph Tan <dghosef@gmail.com>")
 ;;; keepass
 (unless (package-installed-p 'keepass-mode)
   (package-install 'keepass-mode))
@@ -451,6 +391,21 @@
   )
 
 (define-key evil-normal-state-map (kbd "SPC SPC") 'start_small_shell)
+;; flycheck syntax check install
+(unless (package-installed-p 'flycheck)
+  (package-install 'flycheck))
+(add-hook 'prog-mode-hook #'flycheck-mode)
+;; company-mode autocomplete
+(unless (package-installed-p 'company)
+  (package-install 'company))
+(add-hook 'after-init-hook 'global-company-mode)
+(setq company-dabbrev-downcase 0)
+(setq company-idle-delay 0)
+;; Popups to help me
+(unless (package-installed-p 'company-quickhelp)
+  (package-install 'company-quickhelp))
+(company-quickhelp-mode)
+;;; -------------------------------python-------------------------------------
 ;; aliases - see https://emacs.stackexchange.com/questions/48843/how-to-store-an-eshell-alias-in-init-el
 ;; Not recommended to do it this way but I wanted everything in this file
 (defun eshell-add-aliases ()
@@ -458,12 +413,31 @@
   (dolist (var '(("ipython" "ipython --simple-prompt -i --pprint $*")
 				 (":q" "exit $*")
 				 ("dotfiles" "/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME $*")
+				 ("ff" "find-file $")
 				 ("tp" "trash-put $*")))
 	(add-to-list 'eshell-command-aliases-list var)))
 
 (add-hook 'eshell-post-command-hook 'eshell-add-aliases)
 
+;; Disable company mode for eshell over tramp
+(add-hook
+ 'eshell-mode-hook
+ (lambda () (when (file-remote-p default-directory) (company-mode -1))))
+
+;; lsp mode stuff
+(unless (package-installed-p 'lsp-ui)
+  (package-install 'lsp-ui))
+(unless (package-installed-p 'lsp-treemacs)
+  (package-install 'lsp-treemacs))
+(unless (package-installed-p 'lsp-mode)
+  (package-install 'lsp-mode))
+(unless (package-installed-p 'dap-mode)
+  (package-install 'dap-mode))
 (global-set-key (kbd "C-c s s" ) 'eshell)
+(setq lsp-keymap-prefix "C-c l")
+
+(require 'lsp-mode)
+(add-hook 'prog-mode-hook #'lsp)
 ;;; -------------------------------python-------------------------------------
 ;; Download elpy - requires python, jedi, black, autopep8, yapf(install w/ pip)
 (unless (package-installed-p 'elpy)
@@ -484,35 +458,28 @@
 ;;; -------------------------------c/c++/obj-c-------------------------------------
 ;; Bracket indentation
 (setq c-default-style "bsd")
-;; flycheck syntax check install
-(unless (package-installed-p 'flycheck)
-  (package-install 'flycheck))
-(add-hook 'after-init-hook #'global-flycheck-mode) ; enable
-;; company-mode autocomplete
-(unless (package-installed-p 'company)
-  (package-install 'company))
-(add-hook 'after-init-hook 'global-company-mode)
-(setq company-dabbrev-downcase 0)
-(setq company-idle-delay 0)
-;; Download irony - requires llvm and irony(yay -S irony-mode) and bear(compile database)
-(unless (package-installed-p 'irony) ; autocomplete
-  (package-install 'irony))
-(eval-after-load 'company
-  '(add-to-list 'company-backends 'company-irony))
-(unless (package-installed-p 'flycheck-irony) ; syntax checker
-  (package-install 'flycheck-irony))
-(eval-after-load 'flycheck
-  '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
-
-(add-hook 'c++-mode-hook 'irony-mode)
-(add-hook 'c-mode-hook 'irony-mode)
-(add-hook 'objc-mode-hook 'irony-mode)
-
-(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
 
 
-;;; ------------------------nixlang----------------------------
+;;; ------------------------Nixlang----------------------------
 (unless (package-installed-p 'nix-mode)
   (package-install 'nix-mode))
 (require 'nix-mode)
 (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode))
+
+;;; --------------------------Flex-------------------------
+(when (not (file-exists-p "~/.emacs.d/flex-mode"))
+  (shell-command "git clone https://github.com/manateelazycat/flex ~/.emacs.d/flex-mode"))
+(add-to-list 'load-path "~/.emacs.d/flex-mode")
+(require 'flex)
+
+(add-to-list 'auto-mode-alist '("\\.flex$" . flex-mode))
+(autoload 'flex-mode "flex")
+
+;;; -----------------------Bison------------------------
+(when (not (file-exists-p "~/.emacs.d/bison-mode"))
+  (shell-command "git clone https://github.com/Wilfred/bison-mode ~/.emacs.d/bison-mode"))
+(add-to-list 'load-path "~/.emacs.d/bison-mode")
+(require 'bison-mode)
+
+(add-to-list 'auto-mode-alist '("\\.y$" . bison-mode))
+(autoload 'flex-mode "bison-mode")
