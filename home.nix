@@ -81,7 +81,6 @@ in
     pkgs.keepassxc
     pkgs.kpcli
     pkgs.wget
-  
     # Images
     pkgs.feh
     pkgs.gimp
@@ -91,8 +90,8 @@ in
     pkgs.gnumake
     pkgs.libtool
     pkgs.SDL
-    pkgs.gdb
-    pkgs.gcc
+    pkgs.ccls
+    pkgs.clang
     pkgs.bear
     # Emacs
     pkgs.emacs

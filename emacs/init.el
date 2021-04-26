@@ -1,14 +1,14 @@
 ;;; notes
 ;; Guiding principles: Reproducability and portability
+;; Install lsp stuff for all required langues(clang for cpp)
 ;; Please install git, vim, zip, etc
 ;; For keepass, install keepass cli or kpcli or whatever it's called
 ;; vterm - cmake, libtool-bin, libvterm
-;; For spotify add spotify client and id to ~/.emacs-secrets.el. Also pin spotify to browser/always have it open. Numbers are online
 ;; For spellcheck, ispell
 ;; For pdf editing follow https://github.com/politza/pdf-tools. Comment out pdf-loader-install if necessary
 ;; For better projectile search? and dumbjump install ripgrep
 ;; For python development install python(package manager), jedi, black, autopep8, yapf, pyreadline, ipython(pip), flake8, rope
-;; For c/c++/obj-c/etc install llvm, irony-server, bear
+;; For c/c++/obj-c/etc install llvm, bear
 ;; For taking notes/drawing the program "drawing"
 ;; For latex preview dvipng and 'latex'. For export also install zip
 ;; Enable debug messages for problems with this file
@@ -22,19 +22,24 @@
 
 
 ;;; --------------------------vim-migration/general-editing------------------------
+(defun install-package (package)
+  (unless (package-installed-p package)
+        (package-refresh-contents)
+	(package-install package)))
+
 (display-time)
 (setq-default tab-width 4)
 (setq-default tab-stop-list 4)
 ;; Autodetect indentation if possible
 
-(unless (package-installed-p 'dtrt-indent)
-  (package-install 'dtrt-indent))
+(install-package 'dtrt-indent)
+
 (dtrt-indent-global-mode 1)
 ;; Download Evil
-(unless (package-installed-p 'evil)
-  (package-install 'evil))
+(install-package 'evil)
+
 ;; Visual vertical movement(for lines that wrap)
-(setq evil-respect-visual-line-mode t)
+(setq evil-respect-visual-line-mode nil) ; Ideally it would be true but it's not working rn :(
 (global-visual-line-mode)
 ;; allow c-u scrolling in evil
 (setq evil-want-C-u-scroll t)
@@ -45,8 +50,8 @@
 (require 'evil)
 (evil-mode 1)
 ;; Enable evil collection
-(unless (package-installed-p 'evil-collection)
-  (package-install 'evil-collection))
+(install-package 'evil-collection)
+
 (evil-collection-init)
 (setq evil-search-module 'evil-search)
 ;; Disable evil unwanted org indentation
@@ -57,8 +62,8 @@
 (global-auto-revert-mode)
 ;; set leader key in normal state
 ;; regular undo tree
-(unless (package-installed-p 'undo-tree)
-  (package-install 'undo-tree))
+(install-package 'undo-tree)
+
 (require 'undo-tree)
 (global-undo-tree-mode)
 (undo-tree-mode 1)
@@ -81,29 +86,28 @@
 (setq display-line-numbers-mode 'visual)
 
 ;; which-key
-(unless (package-installed-p 'which-key)
-  (package-install 'which-key))
+(install-package 'which-key)
+
 (which-key-mode)
 ;; snippets
-(unless (package-installed-p 'yasnippet)
-  (package-install 'yasnippet))
+(install-package 'yasnippet)
+
 (require 'yasnippet)
 (yas-global-mode 1)
 ;; Multiple cursors
-(unless (package-installed-p 'evil-multiedit)
-  (package-install 'evil-multiedit))
+(install-package 'evil-multiedit)
+
 (require 'evil-multiedit)
 (evil-multiedit-default-keybinds)
 ;; Symbol list
-(unless (package-installed-p 'imenu-list)
-  (package-install 'imenu-list))
- 
+(install-package 'imenu-list)
+
 (setq imenu-list-auto-resize t)
 (global-set-key (kbd "C-'") #'imenu-list-smart-toggle)
 (setq imenu-list-focus-after-activation t)
 ;; Dumb Jump
-(unless (package-installed-p 'dumb-jump)
-  (package-install 'dumb-jump))
+(install-package 'dumb-jump)
+
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 ;; Warn when lines are too long
 (require 'whitespace)
@@ -112,19 +116,36 @@
 
 (add-hook 'prog-mode-hook 'whitespace-mode)
 ;; Edit in firefox
-(unless (package-installed-p 'atomic-chrome)
-  (package-install 'atomic-chrome))
+(install-package 'atomic-chrome)
+
 (require 'atomic-chrome)
 (atomic-chrome-start-server)
+
+;; Kill buffer then reopen
+(defun refresh-buffer ()
+  (interactive)
+  (if (buffer-modified-p)
+	  (message "please save file first")
+	(let ((file-name buffer-file-name))
+	  (kill-buffer)
+	  (find-file file-name))))
+(global-set-key (kbd "C-c r") 'refresh-buffer)
+
 ;;; ------------------------navigation---------------------------
 
+(install-package 'fancy-dabbrev)
+(global-set-key (kbd "C-<return>") 'fancy-dabbrev-expand)
+;; Over tramp, use simple autocomplete
+(add-hook
+ 'prog-mode-hook
+ (lambda () (when (file-remote-p default-directory) (company-mode -1) (fancy-dabbrev-mode))))
 ;; Sentences don't need 2 spaces after.
 (setf sentence-end-double-space nil)
 
 ;; Projectile project jumping
 
-(unless (package-installed-p 'projectile)
-  (package-install 'projectile))
+(install-package 'projectile)
+
 (projectile-mode +1)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 (setq projectile-enable-caching t)
@@ -156,8 +177,8 @@
 (define-key evil-normal-state-map (kbd "C-w C-k") 'windmove-up)
 (define-key evil-normal-state-map (kbd "C-w C-l") 'windmove-right)
 ;; Go to other window
-(unless (package-installed-p 'ace-window)
-  (package-install 'ace-window))
+(install-package 'ace-window)
+
 (global-set-key (kbd "M-o") 'ace-window)
 ;; Use letter keys for window switch
 (setq aw-keys '(?a ?b ?c ?d ?e ?f ?g ?h ?i))
@@ -187,8 +208,8 @@
 (define-key evil-normal-state-map (kbd "-") 'shrink-window)
 
 ; fuzzy find ido
-(unless (package-installed-p 'flx-ido)
-  (package-install 'flx-ido))
+(install-package 'flx-ido)
+
 ; Enable ido
 (require 'ido)
 (require 'flx-ido)
@@ -200,12 +221,22 @@
 (setq ido-use-faces nil)
 
 ; ido vertical and c-n c-p
-(unless (package-installed-p 'ido-vertical-mode)
-  (package-install 'ido-vertical-mode))
+(install-package 'ido-vertical-mode)
+
 (ido-mode 1)
 (ido-vertical-mode 1)
 (setq ido-vertical-define-keys 'C-n-and-C-p-only)
   
+;; flycheck syntax check install
+(install-package 'flycheck)
+
+(add-hook 'prog-mode-hook #'flycheck-mode)
+;; company-mode autocomplete
+(install-package 'company)
+
+(add-hook 'after-init-hook 'global-company-mode)
+(setq company-dabbrev-downcase 0)
+(setq company-idle-delay 0)
 ;;; ---------------------------aesthetics-------------------------
 ;; Disable toolbar/menubar/:q
 (toggle-scroll-bar -1)
@@ -213,18 +244,18 @@
 (menu-bar-mode -1)
 
 ;; Theme
-(unless (package-installed-p 'solarized-theme)
-  (package-install 'solarized-theme))
-(unless (package-installed-p 'doom-themes)
-  (package-install 'doom-themes))
+(install-package 'solarized-theme)
+
+(install-package 'doom-themes)
+
 (load-theme 'solarized-dark t)
 
 ;;; ------------------------------org-mode-------------------------
 ;; Spellcheck
 (add-hook 'org-mode-hook 'flyspell-mode)
 ;; pretty bullets :)
-(unless (package-installed-p 'org-bullets)
-  (package-install 'org-bullets))
+(install-package 'org-bullets)
+
 (require 'org-bullets)
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 (setq org-startup-with-inline-images t) ; show inline images
@@ -307,17 +338,17 @@
   "j" (lambda () (interactive) (doc-view-next-line-or-next-page 5))
   "k" (lambda () (interactive) (doc-view-previous-line-or-previous-page 5))
   "l" 'doc-view-next-page)
-(unless (package-installed-p 'let-alist)
-  (package-install 'let-alist))
-(unless (package-installed-p 'tablist)
-  (package-install 'tablist))
-(unless (package-installed-p 'pdf-tools)
-  (package-install 'pdf-tools))
+(install-package 'let-alist)
+
+(install-package 'tablist)
+
+(install-package 'pdf-tools)
+
 (pdf-loader-install)
 
 ;;; --------------------------------magit--------------------------
-(unless (package-installed-p 'magit)
-  (package-install 'magit))
+(install-package 'magit)
+
 
 ;;; ----------------------------dired------------------------
 (setq delete-by-moving-to-trash t)
@@ -338,8 +369,8 @@
 (setq eww-search-prefix "https://www.google.com/search?q=")
 
 ;;; keepass
-(unless (package-installed-p 'keepass-mode)
-  (package-install 'keepass-mode))
+(install-package 'keepass-mode)
+
 (require 'keepass-mode)
 (define-key keepass-mode-map (kbd "C-c C-c") 'keepass-mode-copy-password)
 (defun open-passwords ()
@@ -347,8 +378,8 @@
   (find-file "~/Dropbox/Passwords.kdbx"))
 (global-set-key (kbd "C-c s p") 'open-passwords)
 ;;; -----------------------latex----------------------------
-(unless (package-installed-p 'auctex)
-  (package-install 'auctex))
+(install-package 'auctex)
+
 (setq TeX-auto-save t)
 (setq TeX-parse-self t)
 (setq TeX-save-query nil)
@@ -362,10 +393,11 @@
 (setq TeX-view-program-selection '((output-pdf "PDF Tools")))
 
 ;;; --------------------------vterm-------------------------------
-(unless (package-installed-p 'vterm)
-  (package-install 'vterm))
+(install-package 'vterm)
+
 
 ;;; --------------------------------eshell-----------------------------------
+(global-set-key (kbd "C-c s s" ) 'eshell)
 (defun ecd ()
   "
   Sets the eshell directory to the current buffer
@@ -391,21 +423,6 @@
   )
 
 (define-key evil-normal-state-map (kbd "SPC SPC") 'start_small_shell)
-;; flycheck syntax check install
-(unless (package-installed-p 'flycheck)
-  (package-install 'flycheck))
-(add-hook 'prog-mode-hook #'flycheck-mode)
-;; company-mode autocomplete
-(unless (package-installed-p 'company)
-  (package-install 'company))
-(add-hook 'after-init-hook 'global-company-mode)
-(setq company-dabbrev-downcase 0)
-(setq company-idle-delay 0)
-;; Popups to help me
-(unless (package-installed-p 'company-quickhelp)
-  (package-install 'company-quickhelp))
-(company-quickhelp-mode)
-;;; -------------------------------python-------------------------------------
 ;; aliases - see https://emacs.stackexchange.com/questions/48843/how-to-store-an-eshell-alias-in-init-el
 ;; Not recommended to do it this way but I wanted everything in this file
 (defun eshell-add-aliases ()
@@ -424,24 +441,12 @@
  'eshell-mode-hook
  (lambda () (when (file-remote-p default-directory) (company-mode -1))))
 
-;; lsp mode stuff
-(unless (package-installed-p 'lsp-ui)
-  (package-install 'lsp-ui))
-(unless (package-installed-p 'lsp-treemacs)
-  (package-install 'lsp-treemacs))
-(unless (package-installed-p 'lsp-mode)
-  (package-install 'lsp-mode))
-(unless (package-installed-p 'dap-mode)
-  (package-install 'dap-mode))
-(global-set-key (kbd "C-c s s" ) 'eshell)
-(setq lsp-keymap-prefix "C-c l")
-
-(require 'lsp-mode)
-(add-hook 'prog-mode-hook #'lsp)
+(install-package 'eglot)
+(add-hook 'prog-mode-hook 'eglot-ensure)
 ;;; -------------------------------python-------------------------------------
 ;; Download elpy - requires python, jedi, black, autopep8, yapf(install w/ pip)
-(unless (package-installed-p 'elpy)
-  (package-install 'elpy))
+(install-package 'elpy)
+
 ;; Enable elpy
 (elpy-enable)
 ;; Disable elpy vertical lines
@@ -455,14 +460,17 @@
 (setq elpy-rpc-virtualenv-path 'system) ; Don't use a venv by default
 
 
-;;; -------------------------------c/c++/obj-c-------------------------------------
+;;; -------------------------------c/cpp/c++/obj-c-------------------------------------
 ;; Bracket indentation
 (setq c-default-style "bsd")
-
+;; Show function definitions below
+(install-package 'c-eldoc)
+(load "c-eldoc")
+(add-hook 'c-mode-hook 'c-turn-on-eldoc-mode)
 
 ;;; ------------------------Nixlang----------------------------
-(unless (package-installed-p 'nix-mode)
-  (package-install 'nix-mode))
+(install-package 'nix-mode)
+
 (require 'nix-mode)
 (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode))
 
