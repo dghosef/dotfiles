@@ -5,6 +5,7 @@
     allowBold = true;
     audibleBell = false;
     backgroundColor = "rgba(40, 42, 54, 1)";
+    scrollbackLines=-1;
     colorsExtra = ''
       foreground = #839496
       foreground_bold = #eee8d5

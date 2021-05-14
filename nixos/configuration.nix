@@ -6,7 +6,8 @@
 #
 # ###########################################################
 # # INSTALL HOME-MANAGER USING INSTRUCTIONS FOR FULL SYSTEM #
-# # AS PART OF THE INSTALL PROCESS - CONSIDERED ESSENTIAL   #
+# # AS PART OF THE INSTALL PROCESS. ALSO UPGRADE TO NIXOS   #
+# # UNSTABLE                                                #
 # ###########################################################
 
 { config, pkgs, lib, ... }:
@@ -16,6 +17,8 @@ with pkgs;
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      # Julia 1.6.1
+      ./julia.nix
     ];
 
   # ---------------Boot------------------
@@ -105,6 +108,7 @@ with pkgs;
                     "networkmanager" 
                     "libvirtd" # virt-namager
                     "dialout" # usb serial -107e
+                    "docker"
                   ]; 
   };
   programs.fish.enable = true;
@@ -125,12 +129,28 @@ with pkgs;
   nixpkgs.config.allowUnfree = true;
   environment.pathsToLink = [ "/libexec" ]; # required for i3blocks
   programs.steam.enable = true;
+  services.tlp.enable = true;
+  nixpkgs.config.packageOverrides = pkgs: {
+    steam = pkgs.steam.override {
+      extraPkgs = pkgs: [
+        glibc
+      ];
+    };
+  };
   virtualisation.libvirtd.enable = true;
+  virtualisation.docker.enable = true;
   programs.dconf.enable = true;
   environment.systemPackages = with pkgs; [
     lxappearance
     acpi
     lxqt.pavucontrol-qt
+    firefox-bin
+    # Emacs w/ vterm. For some reason didn't work in home-manager
+    ((emacsPackagesNgGen emacs).emacsWithPackages (epkgs: [
+      epkgs.vterm
+    ]))
+    libvterm
+    libvterm-neovim
   ];
   environment.variables.EDITOR = "termite";
   # ---------------------------X-Server-----------------------

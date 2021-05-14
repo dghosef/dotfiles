@@ -65,22 +65,26 @@ in
   home.packages = [
     # General
     pkgs.system-config-printer
+    pkgs.lm_sensors
     pkgs.zip
     pkgs.unzip
     pkgs.neovim
     pkgs.xsane
     pkgs.git
+    pkgs.rnix-lsp
     pkgs.xdg_utils
+    pkgs.libtool
     # Audio
     pkgs.audacity
     # Web
-    pkgs.firefox
     pkgs.google-chrome
     pkgs.qutebrowser
+    pkgs.zoom-us
     pkgs.spotify
     pkgs.keepassxc
     pkgs.kpcli
     pkgs.wget
+    pkgs.httrack # Download websites
     # Images
     pkgs.feh
     pkgs.gimp
@@ -91,7 +95,8 @@ in
     pkgs.libtool
     pkgs.SDL
     pkgs.ccls
-    pkgs.clang
+    pkgs.gcc
+    pkgs.gdb
     pkgs.bear
     # Emacs
     pkgs.emacs

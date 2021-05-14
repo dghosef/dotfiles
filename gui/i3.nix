@@ -52,8 +52,9 @@ in {
       modifier = mod;
       keybindings = lib.mkOptionDefault {
 
-        # ------------Lock----------------
+        # ------------lock and screenshot----------------
         "${mod}+g" = "exec --no-startup-id i3lock --color=#000000 --show-failed-attempts";
+        "${mod}+x" = "--release exec --no-startup-id scrot -s '%Y-%m-%d_$wx$h_scrot.png' -e 'mv $f ~/Desktop/'";
 
         # -------------Navigation-----------
         # Focus
@@ -117,6 +118,9 @@ in {
         # Scratchpad
         "${mod}+Shift+BackSpace" = "move scratchpad";
         "${mod}+backslash" = "scratchpad show";
+
+        # Rebind mod + w to not to the tabbed thing
+        "${mod}+w" = "workspace number 9";
       };
     };
   };

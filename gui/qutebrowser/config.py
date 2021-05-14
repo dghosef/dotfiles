@@ -573,8 +573,3 @@ c.colors.webpage.darkmode.threshold.text = 150
 # behavior is the opposite of `colors.webpage.darkmode.threshold.text`!
 # Type: Int
 c.colors.webpage.darkmode.threshold.background = 205
-
-c.content.user_stylesheets = [
-    '/home/dghosef/.config/nixpkgs/gui/qutebrowser/solarized-dark.css',
-    '/home/dghosef/.config/nixpkgs/gui/qutebrowser/custom_solarized.css',
-]

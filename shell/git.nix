@@ -5,6 +5,5 @@
     userName = "dghosef";
     userEmail = "jdtan638@gmail.com";
     ignores = [ "*~undo-tree~" ];
-
   };
 }

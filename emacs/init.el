@@ -1,3 +1,4 @@
+;; show # of matches for search
 ;;; notes
 ;; Guiding principles: Reproducability and portability
 ;; Install lsp stuff for all required langues(clang for cpp)
@@ -13,6 +14,7 @@
 ;; For latex preview dvipng and 'latex'. For export also install zip
 ;; Enable debug messages for problems with this file
 ;; (setq debug-on-error t)
+;; On non nixos systems install libvterm stuff
 ;;; ---------------------------setup package manager-------------------------
 ;; Set up package.el to work with MELPA
 (require 'package)
@@ -111,7 +113,7 @@
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 ;; Warn when lines are too long
 (require 'whitespace)
-(setq whitespace-line-column 100) ;; limit line length
+(setq whitespace-line-column 92) ;; limit line length
 (setq whitespace-style '(face lines-tail))
 
 (add-hook 'prog-mode-hook 'whitespace-mode)
@@ -130,6 +132,10 @@
 	  (kill-buffer)
 	  (find-file file-name))))
 (global-set-key (kbd "C-c r") 'refresh-buffer)
+
+;; Show number of matches when searching
+(install-package 'anzu)
+(global-anzu-mode +1)
 
 ;;; ------------------------navigation---------------------------
 
@@ -460,21 +466,43 @@
 (setq elpy-rpc-virtualenv-path 'system) ; Don't use a venv by default
 
 
+;;; --------------------------------julia--------------------------------------
+(install-package 'julia-mode)
+(require 'julia-mode)
+(install-package 'eglot-jl)
+(eglot-jl-init)
 ;;; -------------------------------c/cpp/c++/obj-c-------------------------------------
 ;; Bracket indentation
 (setq c-default-style "bsd")
+;; M-[ is insert new {} with indentation and stuff
+(defun insert_brackets ()
+  (interactive)
+  (if (not (looking-at-p " ")) ; TODO: Fix this so we only add " " when not at a space
+	  (insert " "))
+  (insert "{")
+  (indent-for-tab-command)
+  (insert "\n")
+  (indent-for-tab-command)
+  (insert "\n")
+  (indent-for-tab-command)
+  (insert "}")
+  (indent-for-tab-command)
+  (forward-line -1)
+  (indent-for-tab-command)
+  )
+(global-set-key (kbd "M-RET") 'insert_brackets)
 ;; Show function definitions below
 (install-package 'c-eldoc)
 (load "c-eldoc")
 (add-hook 'c-mode-hook 'c-turn-on-eldoc-mode)
 
-;;; ------------------------Nixlang----------------------------
+;;; ------------------------nixlang---------------------------
 (install-package 'nix-mode)
 
 (require 'nix-mode)
 (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode))
 
-;;; --------------------------Flex-------------------------
+;;; --------------------------flex-------------------------
 (when (not (file-exists-p "~/.emacs.d/flex-mode"))
   (shell-command "git clone https://github.com/manateelazycat/flex ~/.emacs.d/flex-mode"))
 (add-to-list 'load-path "~/.emacs.d/flex-mode")
@@ -483,7 +511,7 @@
 (add-to-list 'auto-mode-alist '("\\.flex$" . flex-mode))
 (autoload 'flex-mode "flex")
 
-;;; -----------------------Bison------------------------
+;;; -----------------------bison------------------------
 (when (not (file-exists-p "~/.emacs.d/bison-mode"))
   (shell-command "git clone https://github.com/Wilfred/bison-mode ~/.emacs.d/bison-mode"))
 (add-to-list 'load-path "~/.emacs.d/bison-mode")
