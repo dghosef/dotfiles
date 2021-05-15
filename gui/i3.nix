@@ -21,14 +21,19 @@ in {
         {
           position = "bottom";
           workspaceButtons = false;
-          fonts = ["Roboto Mono 9" "Awesome 10"];
+          fonts = {
+            names = ["Roboto Mono" "FontAwesome"];
+            size = 10.0;
+          };
           statusCommand = "i3blocks -c ${./blocks.conf}";
           extraConfig = "separator_symbol |";
           trayOutput = "None";
         }
       ];
 
-      fonts = ["Roboto Mono, FontAwesome 10"];
+      fonts = {
+        names = ["Roboto Mono" "FontAwesome"];
+      };
 
       floating.titlebar = false;
       window.titlebar = false;

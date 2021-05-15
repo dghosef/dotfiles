@@ -1,25 +1,26 @@
 ;; show # of matches for search
 ;;; notes
 ;; Guiding principles: Reproducability and portability
+;; Exwm - setup emacs to launch on boot
 ;; Install lsp stuff for all required langues(clang for cpp)
 ;; Please install git, vim, zip, etc
-;; For keepass, install keepass cli or kpcli or whatever it's called
 ;; vterm - cmake, libtool-bin, libvterm
 ;; For spellcheck, ispell
 ;; For better projectile search? and dumbjump install ripgrep
 ;; For python development install python(package manager), jedi, black, autopep8, yapf, pyreadline, ipython(pip), flake8, rope
-;; For c/c++/obj-c/etc install llvm, bear
+;; For c/c++/obj-c/etc install bear, ccls, a compiler
 ;; For taking notes/drawing the program "drawing"
 ;; For latex preview dvipng and 'latex'. For export also install zip
 ;; Enable debug messages for problems with this file
 ;; (setq debug-on-error t)
-;; On non nixos systems install libvterm stuff
 ;;; ---------------------------setup package manager-------------------------
 ;; Set up package.el to work with MELPA
 (require 'package)
 (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
 						 ("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
+;; Ensure emacs doesn't write to init.eL
+(setq custom-file (concat user-emacs-directory "/custom.el"))
 
 
 ;;; --------------------------vim-migration/general-editing------------------------
@@ -137,7 +138,15 @@
 (global-anzu-mode +1)
 
 ;;; ------------------------navigation---------------------------
-
+;; Call nearest makefile in parent dir.
+(defun make (command)
+  (interactive
+   (let* ((make-directory (locate-dominating-file (buffer-file-name)
+                                                  "Makefile"))
+          (command (concat "make -k -C "
+                           (shell-quote-argument make-directory))))
+     (list (compilation-read-command command))))
+  (compile command))
 ;; ripgrep
 (install-package 'rg)
 (require 'rg)
@@ -259,6 +268,13 @@
 
 (load-theme 'solarized-dark t)
 
+;;;-----------------------------exwm----------------------------
+(install-package `exwm)
+(require 'exwm)
+(require 'exwm-config)
+(exwm-enable)
+(exwm-config-example)
+
 ;;; ------------------------------org-mode-------------------------
 ;; Spellcheck
 (add-hook 'org-mode-hook 'flyspell-mode)
@@ -341,7 +357,6 @@
 					   ("equation" "\\begin{equation*}\n\\begin{align*}\n$1\n\\end{align*}\n\\end{equation*}\n" "Insert latex code"))))
 
 ;;; ----------------------pdf--------------------------
-;; If pdftools isn't installed it uses doc-view mode
 (evil-define-key 'normal doc-view-minor-mode-map
   "h" 'doc-view-previous-page
   "j" (lambda () (interactive) (doc-view-next-line-or-next-page 5))
