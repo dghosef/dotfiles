@@ -6,7 +6,6 @@
 ;; For keepass, install keepass cli or kpcli or whatever it's called
 ;; vterm - cmake, libtool-bin, libvterm
 ;; For spellcheck, ispell
-;; For pdf editing follow https://github.com/politza/pdf-tools. Comment out pdf-loader-install if necessary
 ;; For better projectile search? and dumbjump install ripgrep
 ;; For python development install python(package manager), jedi, black, autopep8, yapf, pyreadline, ipython(pip), flake8, rope
 ;; For c/c++/obj-c/etc install llvm, bear
@@ -138,6 +137,10 @@
 (global-anzu-mode +1)
 
 ;;; ------------------------navigation---------------------------
+
+;; ripgrep
+(install-package 'rg)
+(require 'rg)
 
 (install-package 'fancy-dabbrev)
 (global-set-key (kbd "C-<return>") 'fancy-dabbrev-expand)
@@ -348,10 +351,6 @@
 
 (install-package 'tablist)
 
-(install-package 'pdf-tools)
-
-(pdf-loader-install)
-
 ;;; --------------------------------magit--------------------------
 (install-package 'magit)
 
@@ -369,21 +368,13 @@
     (switch-to-buffer (generate-new-buffer (concat "eww - " url)))
     (eww-mode)
     (eww url)))
-(global-set-key (kbd "C-c s b" ) 'eww)
-(global-set-key (kbd "C-c s B" ) 'eww-new)
+(global-set-key (kbd "C-c C-s b" ) 'eww)
+(global-set-key (kbd "C-c C-s B" ) 'eww-new)
 (evil-collection-define-key 'normal 'eww-mode-map "O" 'eww-new)
 (setq eww-search-prefix "https://www.google.com/search?q=")
 
-;;; keepass
-(install-package 'keepass-mode)
-
-(require 'keepass-mode)
-(define-key keepass-mode-map (kbd "C-c C-c") 'keepass-mode-copy-password)
-(defun open-passwords ()
-  (interactive)
-  (find-file "~/Dropbox/Passwords.kdbx"))
-(global-set-key (kbd "C-c s p") 'open-passwords)
 ;;; -----------------------latex----------------------------
+;; Note - in general I like overleaf more. 
 (install-package 'auctex)
 
 (setq TeX-auto-save t)
@@ -401,9 +392,12 @@
 ;;; --------------------------vterm-------------------------------
 (install-package 'vterm)
 
+;; Disable evil so we can use vim mode that's inbuilt to the shell
+(add-hook 'vterm-mode-hook
+		  (lambda () (evil-set-initial-state 'vterm-mode 'emacs)))
 
 ;;; --------------------------------eshell-----------------------------------
-(global-set-key (kbd "C-c s s" ) 'eshell)
+(global-set-key (kbd "C-c C-s s" ) 'eshell)
 (defun ecd ()
   "
   Sets the eshell directory to the current buffer
@@ -477,7 +471,7 @@
 ;; M-[ is insert new {} with indentation and stuff
 (defun insert_brackets ()
   (interactive)
-  (if (not (looking-at-p " ")) ; TODO: Fix this so we only add " " when not at a space
+  (if (not (looking-back " "))
 	  (insert " "))
   (insert "{")
   (indent-for-tab-command)

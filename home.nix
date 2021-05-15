@@ -18,11 +18,6 @@ let
     flake8
     rope
     autopep8
-    # 107e
-    pyserial
-    xmodem
-    # typing test cheating
-    pynput
   ]; 
     python-with-my-packages = python3.withPackages my-python-packages;
   allPlatformImports = [
@@ -63,68 +58,16 @@ in
   services.dropbox.enable = true;
   nixpkgs.config.allowUnfree = true;
   home.packages = [
+    # -------------System-------------------
     # General
     pkgs.system-config-printer
     pkgs.lm_sensors
     pkgs.zip
     pkgs.unzip
-    pkgs.neovim
     pkgs.xsane
-    pkgs.git
-    pkgs.rnix-lsp
     pkgs.xdg_utils
-    pkgs.libtool
-    # Audio
-    pkgs.audacity
-    # Web
-    pkgs.google-chrome
-    pkgs.qutebrowser
-    pkgs.zoom-us
-    pkgs.spotify
-    pkgs.keepassxc
-    pkgs.kpcli
-    pkgs.wget
-    pkgs.httrack # Download websites
-    # Images
-    pkgs.feh
-    pkgs.gimp
-    pkgs.drawing
-    # General C-lang Dev
-    pkgs.cmake
-    pkgs.gnumake
-    pkgs.libtool
-    pkgs.SDL
-    pkgs.ccls
-    pkgs.gcc
-    pkgs.gdb
-    pkgs.bear
-    # Emacs
-    pkgs.emacs
-    pkgs.pandoc
-    pkgs.ripgrep
-    pkgs.irony-server # c-type language autocomplete
-    pkgs.texlive.combined.scheme-full # latex
-    pkgs.ispell
-    pkgs.readline
-    # 107e
-    pkgs.saleae-logic
-    pkgs.screen
-    pkgs.binutils
-    pkgs.desktop-file-utils
-    pkgs.libGL
-    pkgs.libGL_driver
-    pkgs.libGLU
-    # Python
-    python-with-my-packages
-    # Communication
-    pkgs.xcompmgr
-    pkgs.discord
-    # FPL team generator
-    pkgs.cbc
-    # Gaming
-    pkgs.minecraft
+    pkgs.xdg-user-dirs
     # Graphics
-    pkgs.gromit-mpx # draw on screen
     pkgs.scrot
     pkgs.i3blocks-gaps
     pkgs.arandr
@@ -138,6 +81,53 @@ in
     pkgs.spice-up
     # Steam
     pkgs.steam-run-native
+    # Audio
+    pkgs.audacity
+    # Images
+    pkgs.feh
+    pkgs.gimp
+    pkgs.drawing
+    # Web
+    pkgs.firefox-bin
+    pkgs.google-chrome
+    pkgs.qutebrowser
+    pkgs.zoom-us
+    pkgs.spotify
+    pkgs.keepassxc
+    pkgs.kpcli
+    pkgs.wget
+    # Communication
+    pkgs.xcompmgr # for zoom annotation
+    pkgs.discord
+    # Gaming
+    pkgs.minecraft
+    # ----------------------------Dev------------------------
+    # General
+    pkgs.git
+    pkgs.neovim
+    # Emacs
+    pkgs.libvterm
+    pkgs.pandoc
+    pkgs.ripgrep
+    pkgs.irony-server # c-type language autocomplete
+    pkgs.texlive.combined.scheme-full # latex
+    pkgs.ispell
+    pkgs.readline
+    # nixlang
+    pkgs.rnix-lsp
+    # General C-langs
+    pkgs.cmake
+    pkgs.gnumake
+    pkgs.libtool
+    pkgs.SDL
+    pkgs.ccls
+    pkgs.gcc
+    pkgs.gdb
+    pkgs.bear
+    # Python
+    python-with-my-packages
+    # FPL team generator
+    pkgs.cbc
   ];
   # Config files
   home.file.".emacs".source = ./emacs/init.el;

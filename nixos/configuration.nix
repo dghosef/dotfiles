@@ -144,13 +144,10 @@ with pkgs;
     lxappearance
     acpi
     lxqt.pavucontrol-qt
-    firefox-bin
     # Emacs w/ vterm. For some reason didn't work in home-manager
     ((emacsPackagesNgGen emacs).emacsWithPackages (epkgs: [
       epkgs.vterm
     ]))
-    libvterm
-    libvterm-neovim
   ];
   environment.variables.EDITOR = "termite";
   # ---------------------------X-Server-----------------------
