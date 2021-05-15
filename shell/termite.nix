@@ -6,6 +6,8 @@
     audibleBell = false;
     backgroundColor = "rgba(40, 42, 54, 1)";
     scrollbackLines=-1;
+    /*
+    # Solarized if i feel like it
     colorsExtra = ''
       foreground = #839496
       foreground_bold = #eee8d5
@@ -30,5 +32,6 @@
       color14 = #93a1a1;
       color15 = #fdf6e3
   '';
+*/
   };
 }

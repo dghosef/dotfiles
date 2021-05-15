@@ -17,8 +17,6 @@ with pkgs;
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      # Julia 1.6.1
-      ./julia.nix
     ];
 
   # ---------------Boot------------------
