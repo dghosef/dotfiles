@@ -155,13 +155,13 @@ with pkgs;
     videoDrivers = [ "nvidia" ];
     # ======================HARDWARE-SPECIFIC TO MY ZENBOOK DUO - COMMENT OUT ON OTHER SYSTEMS=======================
 
-
+    # use i3
     desktopManager = {
       xterm.enable = false;
     };
 
     displayManager = {
-      defaultSession = "none+i3";
+      defaultSession = "none+emacs";
       lightdm = {
         enable = true;
         background = ./lock.jpg;
@@ -171,6 +171,16 @@ with pkgs;
     windowManager.i3 = {
       enable = true;
       package = pkgs.i3-gaps;
+    };
+    # use exwm https://www.reddit.com/r/NixOS/comments/8ghg4f/exwm_problem/dygstdz/
+    windowManager = {
+      session = [ {
+        manage = "desktop";
+        name = "emacs";
+        start = ''
+emacs --eval '(progn (server-start) (exwm-enable))'
+      '';
+      } ];
     };
   };
   # -------------------fonts------------------

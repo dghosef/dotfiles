@@ -269,11 +269,85 @@
 (load-theme 'solarized-dark t)
 
 ;;;-----------------------------exwm----------------------------
+;; Currently experimental and idk if I'll actually use this
+;; Very much from https://github.com/ch11ng/exwm/wiki/Configuration-Example
+;; Then tried to have alot of my i3 features/config here
 (install-package `exwm)
+;; Make class name the buffer name
+(add-hook 'exwm-update-class-hook
+          (lambda ()
+          (exwm-workspace-rename-buffer exwm-class-name)))
 (require 'exwm)
 (require 'exwm-config)
-(exwm-enable)
-(exwm-config-example)
+(exwm-config-ido)
+(setq exwm-workspace-number 10)
+;; All buffers created in EXWM mode are named "*EXWM*". You may want to
+;; change it in `exwm-update-class-hook' and `exwm-update-title-hook', which
+;; are run when a new X window class name or title is available.  Here's
+;; some advice on this topic:
+;; + Always use `exwm-workspace-rename-buffer` to avoid naming conflict.
+;; + For applications with multiple windows (e.g. GIMP), the class names of
+;    all windows are probably the same.  Using window titles for them makes
+;;   more sense.
+;; In the following example, we use class names for all windows except for
+;; Java applications and GIMP.
+(add-hook 'exwm-update-class-hook
+          (lambda ()
+            (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+                        (string= "gimp" exwm-instance-name))
+              (exwm-workspace-rename-buffer exwm-class-name))))
+(add-hook 'exwm-update-title-hook
+          (lambda ()
+            (when (or (not exwm-instance-name)
+                      (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+                      (string= "gimp" exwm-instance-name))
+              (exwm-workspace-rename-buffer exwm-title))))
+
+;; Global keybindings can be defined with `exwm-input-global-keys'.
+;; Here are a few examples:
+(setq exwm-input-global-keys
+      `(
+        ;; Bind "s-r" to exit char-mode and fullscreen mode.
+        ([?\s-r] . exwm-reset)
+        ;; Bind "s-w" to switch workspace interactively.
+        ([?\s-w] . exwm-workspace-switch)
+		;; S-hjkl to emulate my i3 setup
+        ([?\s-h] . windmove-left)
+        ([?\s-j] . windmove-down)
+        ([?\s-k] . windmove-up)
+        ([?\s-l] . windmove-right)
+        ([C-?\s-h] . windmove-left)
+        ([C-?\s-j] . windmove-down)
+        ([C-?\s-k] . windmove-up)
+        ([C-?\s-l] . windmove-right)
+		;; 'S-s-N': Move window to, and switch to, a certain workspace.
+		,@(cl-mapcar (lambda (c n)
+					   `(,(kbd (format "s-%c" c)) .
+						 (lambda ()
+						   (interactive)
+						   (exwm-workspace-move-window ,n)
+						   (exwm-workspace-switch ,n))))
+					 '(?\) ?! ?@ ?# ?$ ?% ?^ ?& ?* ?\()
+					 ;; '(?\= ?! ?\" ?# ?¤ ?% ?& ?/ ?\( ?\))
+					 (number-sequence 0 9))
+		;; Bind "s-0" to "s-9" to switch to a workspace by its index.
+		,@(mapcar (lambda (i)
+					`(,(kbd (format "s-%d" i)) .
+                      (lambda ()
+                        (interactive)
+                        (exwm-workspace-switch-create ,i))))
+                  (number-sequence 0 9))
+        ;; Bind "s-d" to launch applications ('M-&' also works if the output
+        ;; buffer does not bother you).
+        ([?\s-d] . (lambda (command)
+		     (interactive (list (read-shell-command "$ ")))
+		     (start-process-shell-command command nil command)))
+        ;; Bind "s-g" to i3lock
+        ([?\s-g] . (lambda ()
+		    (interactive)
+		    (shell-command "i3lock --color=#000000 --show-failed-attempts")))))
+(require 'exwm-systemtray)
+(exwm-systemtray-enable)
 
 ;;; ------------------------------org-mode-------------------------
 ;; Spellcheck

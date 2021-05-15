@@ -11,7 +11,7 @@
 #   qute://help/settings.html
 
 # Uncomment this to still load settings configured via autoconfig.yml
-# config.load_autoconfig()
+config.load_autoconfig()
 
 # Force software rendering for QtWebEngine. This is needed for
 # QtWebEngine to work with Nouveau drivers and can be useful in other
