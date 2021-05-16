@@ -178,7 +178,8 @@ with pkgs;
         manage = "desktop";
         name = "emacs";
         start = ''
-emacs --eval '(progn (server-start) (exwm-enable))'
+emacs --eval '(progn  (exwm-enable))
+'
       '';
       } ];
     };

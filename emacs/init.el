@@ -221,8 +221,10 @@
 	  (split-and-follow-vertically)
 	(split-and-follow-horizontally)))
 (global-set-key (kbd "C-c <C-return>") 'split-along-longer-side)
-;; Window resize/resizing vertical
-(define-key evil-normal-state-map (kbd "+") 'enlarge-window)
+;; Window resize/resizing
+;; C-c b(big) h(horizontal)/v(vertical)
+;; C-c s(small) h(horizontal)/v(vertical)
+(define-key evil-normal-state-map (kbd "C-c b h") 'enlarge-window)
 (define-key evil-normal-state-map (kbd "-") 'shrink-window)
 
 ; fuzzy find ido
@@ -257,9 +259,9 @@
 (setq company-idle-delay 0)
 ;;; ---------------------------aesthetics-------------------------
 ;; Disable toolbar/menubar/:q
-(toggle-scroll-bar -1)
-(tool-bar-mode -1)
-(menu-bar-mode -1)
+(toggle-scroll-bar 0)
+(tool-bar-mode 0)
+(menu-bar-mode 0)
 
 ;; Theme
 (install-package 'solarized-theme)
@@ -267,87 +269,7 @@
 (install-package 'doom-themes)
 
 (load-theme 'solarized-dark t)
-
-;;;-----------------------------exwm----------------------------
-;; Currently experimental and idk if I'll actually use this
-;; Very much from https://github.com/ch11ng/exwm/wiki/Configuration-Example
-;; Then tried to have alot of my i3 features/config here
-(install-package `exwm)
-;; Make class name the buffer name
-(add-hook 'exwm-update-class-hook
-          (lambda ()
-          (exwm-workspace-rename-buffer exwm-class-name)))
-(require 'exwm)
-(require 'exwm-config)
-(exwm-config-ido)
-(setq exwm-workspace-number 10)
-;; All buffers created in EXWM mode are named "*EXWM*". You may want to
-;; change it in `exwm-update-class-hook' and `exwm-update-title-hook', which
-;; are run when a new X window class name or title is available.  Here's
-;; some advice on this topic:
-;; + Always use `exwm-workspace-rename-buffer` to avoid naming conflict.
-;; + For applications with multiple windows (e.g. GIMP), the class names of
-;    all windows are probably the same.  Using window titles for them makes
-;;   more sense.
-;; In the following example, we use class names for all windows except for
-;; Java applications and GIMP.
-(add-hook 'exwm-update-class-hook
-          (lambda ()
-            (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-                        (string= "gimp" exwm-instance-name))
-              (exwm-workspace-rename-buffer exwm-class-name))))
-(add-hook 'exwm-update-title-hook
-          (lambda ()
-            (when (or (not exwm-instance-name)
-                      (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-                      (string= "gimp" exwm-instance-name))
-              (exwm-workspace-rename-buffer exwm-title))))
-
-;; Global keybindings can be defined with `exwm-input-global-keys'.
-;; Here are a few examples:
-(setq exwm-input-global-keys
-      `(
-        ;; Bind "s-r" to exit char-mode and fullscreen mode.
-        ([?\s-r] . exwm-reset)
-        ;; Bind "s-w" to switch workspace interactively.
-        ([?\s-w] . exwm-workspace-switch)
-		;; S-hjkl to emulate my i3 setup
-        ([?\s-h] . windmove-left)
-        ([?\s-j] . windmove-down)
-        ([?\s-k] . windmove-up)
-        ([?\s-l] . windmove-right)
-        ([C-?\s-h] . windmove-left)
-        ([C-?\s-j] . windmove-down)
-        ([C-?\s-k] . windmove-up)
-        ([C-?\s-l] . windmove-right)
-		;; 'S-s-N': Move window to, and switch to, a certain workspace.
-		,@(cl-mapcar (lambda (c n)
-					   `(,(kbd (format "s-%c" c)) .
-						 (lambda ()
-						   (interactive)
-						   (exwm-workspace-move-window ,n)
-						   (exwm-workspace-switch ,n))))
-					 '(?\) ?! ?@ ?# ?$ ?% ?^ ?& ?* ?\()
-					 ;; '(?\= ?! ?\" ?# ?¤ ?% ?& ?/ ?\( ?\))
-					 (number-sequence 0 9))
-		;; Bind "s-0" to "s-9" to switch to a workspace by its index.
-		,@(mapcar (lambda (i)
-					`(,(kbd (format "s-%d" i)) .
-                      (lambda ()
-                        (interactive)
-                        (exwm-workspace-switch-create ,i))))
-                  (number-sequence 0 9))
-        ;; Bind "s-d" to launch applications ('M-&' also works if the output
-        ;; buffer does not bother you).
-        ([?\s-d] . (lambda (command)
-		     (interactive (list (read-shell-command "$ ")))
-		     (start-process-shell-command command nil command)))
-        ;; Bind "s-g" to i3lock
-        ([?\s-g] . (lambda ()
-		    (interactive)
-		    (shell-command "i3lock --color=#000000 --show-failed-attempts")))))
-(require 'exwm-systemtray)
-(exwm-systemtray-enable)
+(setq solarized-high-contrast-mode-line nil)
 
 ;;; ------------------------------org-mode-------------------------
 ;; Spellcheck
@@ -602,3 +524,171 @@
 
 (add-to-list 'auto-mode-alist '("\\.y$" . bison-mode))
 (autoload 'flex-mode "bison-mode")
+
+
+;;;-----------------------------exwm----------------------------
+;; Currently experimental and idk if I'll actually use this
+;; Very much from https://github.com/ch11ng/exwm/wiki/Configuration-Example
+;; Then tried to have alot of my i3 features/config here
+(install-package `exwm)
+;; Buffer movement follows mouse. Must be called before exwm starts
+(setq mouse-autoselect-window t
+      focus-follows-mouse t)
+;; Required for resizing windows w/ mouse
+(window-divider-mode)
+;; Make class name the buffer name
+(add-hook 'exwm-update-class-hook
+          (lambda ()
+          (exwm-workspace-rename-buffer exwm-class-name)))
+(require 'exwm)
+(require 'exwm-config)
+(require 'exwm-systemtray)
+(exwm-systemtray-enable)
+(setq exwm-systemtray-height 20)
+(exwm-config-ido)
+(setq exwm-workspace-number 10)
+;; All buffers created in EXWM mode are named "*EXWM*". You may want to
+;; change it in `exwm-update-class-hook' and `exwm-update-title-hook', which
+;; are run when a new X window class name or title is available.  Here's
+;; some advice on this topic:
+;; + Always use `exwm-workspace-rename-buffer` to avoid naming conflict.
+;; + For applications with multiple windows (e.g. GIMP), the class names of
+;    all windows are probably the same.  Using window titles for them makes
+;;   more sense.
+;; In the following example, we use class names for all windows except for
+;; Java applications and GIMP.
+(add-hook 'exwm-update-class-hook
+          (lambda ()
+            (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+                        (string= "gimp" exwm-instance-name))
+              (exwm-workspace-rename-buffer exwm-class-name))))
+(add-hook 'exwm-update-title-hook
+          (lambda ()
+            (when (or (not exwm-instance-name)
+                      (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+                      (string= "gimp" exwm-instance-name))
+              (exwm-workspace-rename-buffer exwm-title))))
+;; switch to other buffer sorta like vim C-6
+(defun switch-to-previous-buffer ()
+  (interactive)
+  (evil-switch-to-windows-last-buffer))
+;; spawn new process if buf doesn't exist otherwise switch to buf
+(defun spawn-or-switch (buf cmd)
+  (interactive)
+  (if (get-buffer buf)
+	  (switch-to-buffer buf)
+	(start-process-shell-command cmd nil cmd)))
+;; Global keybindings can be defined with `exwm-input-global-keys'.
+;; Here are a few examples:
+(setq exwm-input-global-keys
+      `(
+        ;; Bind "s-r" to exit char-mode and fullscreen mode.
+        ([?\s-r] . exwm-reset)
+        ;; Bind "s-w" to switch workspace interactively.
+        ([?\s-w] . exwm-workspace-switch)
+		;; S-hjkl to emulate my i3 setup
+        ([?\s-h] . windmove-left)
+        ([?\s-j] . windmove-down)
+        ([?\s-k] . windmove-up)
+        ([?\s-l] . windmove-right)
+        ([?\s-n] . split-along-longer-side)
+        ([?\s-\[] . previous-buffer)
+        ([?\s-\]] . next-buffer)
+        ([?\s-o] . switch-to-previous-buffer)
+		;; S-i to toggle between the modes
+        ([?\s-i] . exwm-input-toggle-keyboard)
+		;; toggle fullscreen
+        ([?\s-f] . exwm-layout-toggle-fullscreen)
+		;; 'S-s-N': Move window to, and switch to, a certain workspace.
+		,@(cl-mapcar (lambda (c n)
+					   `(,(kbd (format "s-%c" c)) .
+						 (lambda ()
+						   (interactive)
+						   (exwm-workspace-move-window ,n)
+						   (exwm-workspace-switch ,n))))
+					 '(?\) ?! ?@ ?# ?$ ?% ?^ ?& ?* ?\()
+					 ;; '(?\= ?! ?\" ?# ?¤ ?% ?& ?/ ?\( ?\))
+					 (number-sequence 0 9))
+		;; Bind "s-0" to "s-9" to switch to a workspace by its index.
+		,@(mapcar (lambda (i)
+					`(,(kbd (format "s-%d" i)) .
+                      (lambda ()
+                        (interactive)
+                        (exwm-workspace-switch-create ,i))))
+                  (number-sequence 0 9))
+        ;; Bind "s-r" to launch applications ('M-&' also works if the output
+        ;; buffer does not bother you). I used r because I'm used to doing
+		;; r for rofi
+        ([?\s-r] . (lambda (command)
+		     (interactive (list (read-shell-command "$ ")))
+		     (start-process-shell-command command nil command)))
+        ;; Bind "s-g" to i3lock
+        ([?\s-g] . (lambda ()
+		    (interactive)
+		    (shell-command "i3lock --color=#000000 --show-failed-attempts")))
+        ;; Bind "s-x" to scrot
+        ([?\s-x] . (lambda ()
+		    (interactive)
+		    (shell-command "scrot -s '%Y-%m-%d_$wx$h_scrot.png' -e 'mv $f ~/Desktop/'")))
+        ;; Bind "s-+"/"s--" to volume
+        ([?\s-=] . (lambda ()
+		    (interactive)
+		    (shell-command "pactl set-sink-volume @DEFAULT_SINK@ +10%")))
+        ;; Bind "s-+"/"s--" to volume
+        ([?\s--] . (lambda ()
+		    (interactive)
+		    (shell-command "pactl set-sink-volume @DEFAULT_SINK@ -10%")))
+		;; spotify play/pause
+        ([?\s-\;] . (lambda ()
+		    (interactive)
+		    (shell-command "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause")))
+        ([?\s-'] . (lambda ()
+		    (interactive)
+		    (shell-command "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next")))
+        ([?\s-:] . (lambda ()
+		    (interactive)
+		    (shell-command "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous")))
+		;; Startup apps
+		;; w for web
+        ([?\s-b] . (lambda ()
+		    (interactive)
+		    (spawn-or-switch "Firefox" "firefox")))
+		;; spotify
+        ([?\s-m] . (lambda ()
+		    (interactive)
+		    (spawn-or-switch "Spotify" "spotify")))
+		;; Keepassxc
+        ([?\s-p] . (lambda ()
+		    (interactive)
+		    (spawn-or-switch "KeePassXC" "keepassxc")))
+		;; Discord
+		([?\s-d] . (lambda ()
+			(interactive)
+		    (spawn-or-switch "discord" "Discord")))
+		;; eshell
+		;; t for terminal(i know, i know, eshell isn't really a teminal)
+        ([?\s-t] . (lambda ()
+		    (interactive)
+			(if (get-buffer "*eshell*")
+				(switch-to-buffer "*eshell*")
+			  (eshell))))
+		))
+;; Mainly to allow other apps to keep native shortcuts
+;; and basic vim motions :)
+(exwm-input-set-simulation-keys
+ '(([?\s-c] . C-c)
+   ([?\s-v] . C-v)
+   ([?\s-u] . C-l) ; For url bar access
+   ([?\C-h] . left)
+   ([?\C-j] . down)
+   ([?\C-k] . up)
+   ([?\C-l] . right)))
+
+;; Startup commands - get run every time this config is refreshed so keep in mind when adding stuff
+(start-process-shell-command "dropbox" nil "dropbox start")
+(start-process-shell-command "xcompmgr" nil "xcompmgr -c -l0 -t0 -r0 -o.00")
+(start-process-shell-command "setxkbmap" nil "setxkbmap -option caps:escape -option ralt:compose")
+(start-process-shell-command "unclutter" nil "unclutter -idle 10")
+(start-process-shell-command "network manager" nil "unclutter -idle 10")
+(provide 'init)
+;;; init ends here

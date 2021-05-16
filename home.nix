@@ -67,6 +67,7 @@ in
     pkgs.xsane
     pkgs.xdg_utils
     pkgs.xdg-user-dirs
+    pkgs.unclutter # hide mouse
     # Graphics
     pkgs.scrot
     pkgs.i3blocks-gaps
