@@ -26,7 +26,7 @@
 ;;; --------------------------vim-migration/general-editing------------------------
 (defun install-package (package)
   (unless (package-installed-p package)
-        (package-refresh-contents)
+	(package-refresh-contents)
 	(package-install package)))
 
 (display-time)
@@ -142,10 +142,10 @@
 (defun make (command)
   (interactive
    (let* ((make-directory (locate-dominating-file (buffer-file-name)
-                                                  "Makefile"))
-          (command (concat "make -k -C "
-                           (shell-quote-argument make-directory))))
-     (list (compilation-read-command command))))
+												  "Makefile"))
+		  (command (concat "make -k -C "
+						   (shell-quote-argument make-directory))))
+	 (list (compilation-read-command command))))
   (compile command))
 ;; ripgrep
 (install-package 'rg)
@@ -205,11 +205,11 @@
 (defun jump-to-largest-window ()
   "Move to the largest window"
   (interactive)
-  ; sort windows and select largest
+										; sort windows and select largest
   (select-window (nth 0 (sort (window-list)
-		(lambda (a b) (> (* (window-total-height a) (window-total-width a))
-							(* (window-total-height b) (window-total-width b))))))))
-		
+							  (lambda (a b) (> (* (window-total-height a) (window-total-width a))
+											   (* (window-total-height b) (window-total-width b))))))))
+
 
 ;; Smart splitting. Sorta like bpswm
 (defun split-along-longer-side ()
@@ -225,26 +225,26 @@
 (define-key evil-normal-state-map (kbd "+") 'enlarge-window)
 (define-key evil-normal-state-map (kbd "-") 'shrink-window)
 
-; fuzzy find ido
+										; fuzzy find ido
 (install-package 'flx-ido)
 
-; Enable ido
+										; Enable ido
 (require 'ido)
 (require 'flx-ido)
 (ido-mode 1)
 (ido-everywhere 1)
 (flx-ido-mode 1)
-; disable ido faces to see flx highlights.
+										; disable ido faces to see flx highlights.
 (setq ido-enable-flex-matching t)
 (setq ido-use-faces nil)
 
-; ido vertical and c-n c-p
+										; ido vertical and c-n c-p
 (install-package 'ido-vertical-mode)
 
 (ido-mode 1)
 (ido-vertical-mode 1)
 (setq ido-vertical-define-keys 'C-n-and-C-p-only)
-  
+
 ;; flycheck syntax check install
 (install-package 'flycheck)
 
@@ -286,9 +286,9 @@
   (let ((imgfile (read-string "Filename? " "" 'my-history)))
 	(end-of-line)
 	(if (not (file-exists-p (concat "./" imgfile)))
-      (insert "\n[[./" imgfile "]]\n" ))
-    (start-process-shell-command "drawing" nil "drawing")
-  ))
+		(insert "\n[[./" imgfile "]]\n" ))
+	(start-process-shell-command "drawing" nil "drawing")
+	))
 (global-set-key (kbd "C-c d") 'create-img)
 ;; add finished times to org
 (setq org-log-done 'time)
@@ -298,7 +298,7 @@
 (setq org-agenda-files (list (concat org-directory "lists.org"))) ; Only look at todo list
 (setq org-agenda-start-on-weekday nil) ; Make agenda start on current day
 (setq org-todo-keyword-faces
-      '(("URGENT" . org-warning)))
+	  '(("URGENT" . org-warning)))
 ;; Open agenda
 (global-set-key (kbd "C-c a" ) 'org-agenda)
 ;; Bindings to common files
@@ -337,19 +337,19 @@
 			(define-key yas/keymap [tab] 'yas/next-field)))
 
 (eval-after-load 'yasnippet
-'(yas-define-snippets 'org-mode
-					 '(("bmatrix" "\\begin{bmatrix}\n$1\n\\end{bmatrix}" "Insert a latex bmatrix")
-					   ("bmx" "\\begin{bmatrix}$1\\end{bmatrix}$2" "Insert a latex bmatrix")
-					   ("pd" "\\frac{\\partial $1}{\\partial $2}" "Insert a latex partial derivative")
-					   ("\$pd" "\$\\frac{\\partial $1}{\\partial $2}" "Insert a latex pd part 2")
-					   ("$bmx" "\$\\begin{bmatrix}$1\\end{bmatrix}$2\$" "Insert a latex bmatrix pt 2")
-					   ("begin" "\\begin{$1}\n$2\n\\end{$1}" "Begin stuff")
-					   ("gather" "\\begin{gather*}\n$1\n\\end{gather*}" "Begin stuff")
-					   ("frc" "\\frac{$1}\\{$2}" "Insert a latex fraction")
-					   ("box" "\\begin{tcolorbox}$1\\end{tcolorbox}" "tcolorbox - latex")
-					   ("*" "\\cdot" "dot product")
-					   ("fourier" "\\frac{v \\cdot v_i}{v_i \\cdot v_i} * v_i" "Fourier formula")
-					   ("equation" "\\begin{equation*}\n\\begin{align*}\n$1\n\\end{align*}\n\\end{equation*}\n" "Insert latex code"))))
+  '(yas-define-snippets 'org-mode
+						'(("bmatrix" "\\begin{bmatrix}\n$1\n\\end{bmatrix}" "Insert a latex bmatrix")
+						  ("bmx" "\\begin{bmatrix}$1\\end{bmatrix}$2" "Insert a latex bmatrix")
+						  ("pd" "\\frac{\\partial $1}{\\partial $2}" "Insert a latex partial derivative")
+						  ("\$pd" "\$\\frac{\\partial $1}{\\partial $2}" "Insert a latex pd part 2")
+						  ("$bmx" "\$\\begin{bmatrix}$1\\end{bmatrix}$2\$" "Insert a latex bmatrix pt 2")
+						  ("begin" "\\begin{$1}\n$2\n\\end{$1}" "Begin stuff")
+						  ("gather" "\\begin{gather*}\n$1\n\\end{gather*}" "Begin stuff")
+						  ("frc" "\\frac{$1}\\{$2}" "Insert a latex fraction")
+						  ("box" "\\begin{tcolorbox}$1\\end{tcolorbox}" "tcolorbox - latex")
+						  ("*" "\\cdot" "dot product")
+						  ("fourier" "\\frac{v \\cdot v_i}{v_i \\cdot v_i} * v_i" "Fourier formula")
+						  ("equation" "\\begin{equation*}\n\\begin{align*}\n$1\n\\end{align*}\n\\end{equation*}\n" "Insert latex code"))))
 
 ;;; ----------------------pdf--------------------------
 (evil-define-key 'normal doc-view-minor-mode-map
@@ -375,9 +375,9 @@
   "Open eww in new buffer"
   (interactive)
   (let ((url (read-from-minibuffer "Enter URL or keywords: ")))
-    (switch-to-buffer (generate-new-buffer (concat "eww - " url)))
-    (eww-mode)
-    (eww url)))
+	(switch-to-buffer (generate-new-buffer (concat "eww - " url)))
+	(eww-mode)
+	(eww url)))
 (global-set-key (kbd "C-c C-s b" ) 'eww)
 (global-set-key (kbd "C-c C-s B" ) 'eww-new)
 (evil-collection-define-key 'normal 'eww-mode-map "O" 'eww-new)
@@ -547,13 +547,13 @@
 (install-package `exwm)
 ;; Buffer movement follows mouse. Must be called before exwm starts
 (setq mouse-autoselect-window t
-      focus-follows-mouse t)
+	  focus-follows-mouse t)
 ;; Required for resizing windows w/ mouse
 (window-divider-mode)
 ;; Make class name the buffer name
 (add-hook 'exwm-update-class-hook
-          (lambda ()
-          (exwm-workspace-rename-buffer exwm-class-name)))
+		  (lambda ()
+			(exwm-workspace-rename-buffer exwm-class-name)))
 (require 'exwm)
 (require 'exwm-config)
 (require 'exwm-systemtray)
@@ -567,50 +567,62 @@
 ;; some advice on this topic:
 ;; + Always use `exwm-workspace-rename-buffer` to avoid naming conflict.
 ;; + For applications with multiple windows (e.g. GIMP), the class names of
-;    all windows are probably the same.  Using window titles for them makes
+										;    all windows are probably the same.  Using window titles for them makes
 ;;   more sense.
 ;; In the following example, we use class names for all windows except for
 ;; Java applications and GIMP.
 (add-hook 'exwm-update-class-hook
-          (lambda ()
-            (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-                        (string= "gimp" exwm-instance-name))
-              (exwm-workspace-rename-buffer exwm-class-name))))
+		  (lambda ()
+			(unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+						(string= "gimp" exwm-instance-name))
+			  (exwm-workspace-rename-buffer exwm-class-name))))
 (add-hook 'exwm-update-title-hook
-          (lambda ()
-            (when (or (not exwm-instance-name)
-                      (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-                      (string= "gimp" exwm-instance-name))
-              (exwm-workspace-rename-buffer exwm-title))))
+		  (lambda ()
+			(when (or (not exwm-instance-name)
+					  (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+					  (string= "gimp" exwm-instance-name))
+			  (exwm-workspace-rename-buffer exwm-title))))
 ;; switch to other buffer sorta like vim C-6
 (defun switch-to-previous-buffer ()
   (interactive)
   (evil-switch-to-windows-last-buffer))
+;; go to most recently used window(will toggle if used successively)
+(defun last-window ()
+  (interactive)
+  (let ((win (get-mru-window nil nil t)))
+    (when win (select-window win))))
 ;; spawn new process if buf doesn't exist otherwise switch to buf
+;; If we're already on that window, go back to most recently used  window
 (defun spawn-or-switch (buf cmd)
   (interactive)
   (if (get-buffer buf)
-	  (switch-to-buffer buf)
+	  ;; Either reopen the buffer if it's not already open or jump to the window
+	  ;; if it is. If we're already on that buffer, go to mru window
+	  (if (get-buffer-window buf)
+		  (if (string= (buffer-name) buf)
+			  (last-window)
+			(select-window (get-buffer-window buf)))
+		(switch-to-buffer buf))
 	(start-process-shell-command cmd nil cmd)))
 ;; Global keybindings can be defined with `exwm-input-global-keys'.
 ;; Here are a few examples:
 (setq exwm-input-global-keys
-      `(
-        ;; Bind "s-w" to switch workspace interactively.
-        ([?\s-w] . exwm-workspace-switch)
+	  `(
+		;; Bind "s-w" to switch workspace interactively.
+		([?\s-w] . exwm-workspace-switch)
 		;; S-hjkl to emulate my i3 setup
-        ([?\s-h] . windmove-left)
-        ([?\s-j] . windmove-down)
-        ([?\s-k] . windmove-up)
-        ([?\s-l] . windmove-right)
-        ([?\s-n] . split-along-longer-side)
-        ([?\s-\[] . previous-buffer)
-        ([?\s-\]] . next-buffer)
-        ([?\s-o] . switch-to-previous-buffer)
+		([?\s-h] . windmove-left)
+		([?\s-j] . windmove-down)
+		([?\s-k] . windmove-up)
+		([?\s-l] . windmove-right)
+		([?\s-n] . split-along-longer-side)
+		([?\s-\[] . previous-buffer)
+		([?\s-\]] . next-buffer)
+		([?\s-o] . switch-to-previous-buffer)
 		;; S-i to toggle between the modes
-        ([?\s-i] . exwm-input-toggle-keyboard)
+		([?\s-i] . exwm-input-toggle-keyboard)
 		;; toggle fullscreen
-        ([?\s-f] . exwm-layout-toggle-fullscreen)
+		([?\s-f] . exwm-layout-toggle-fullscreen)
 		;; 'S-s-N': Move window to, and switch to, a certain workspace.
 		,@(cl-mapcar (lambda (c n)
 					   `(,(kbd (format "s-%c" c)) .
@@ -624,84 +636,85 @@
 		;; Bind "s-0" to "s-9" to switch to a workspace by its index.
 		,@(mapcar (lambda (i)
 					`(,(kbd (format "s-%d" i)) .
-                      (lambda ()
-                        (interactive)
-                        (exwm-workspace-switch-create ,i))))
-                  (number-sequence 0 9))
-        ;; Bind "s-r" to launch applications ('M-&' also works if the output
-        ;; buffer does not bother you). I used r because I'm used to doing
+					  (lambda ()
+						(interactive)
+						(exwm-workspace-switch-create ,i))))
+				  (number-sequence 0 9))
+		;; Bind "s-r" to launch applications ('M-&' also works if the output
+		;; buffer does not bother you). I used r because I'm used to doing
 		;; r for rofi
-        ([?\s-r] . (lambda (command)
-		     (interactive (list (read-shell-command "$ ")))
-		     (start-process-shell-command command nil command)))
-        ;; Bind "s-g" to i3lock
-        ([?\s-g] . (lambda ()
-		    (interactive)
-		    (shell-command "i3lock --color=#000000 --show-failed-attempts")))
-        ;; Bind "s-x" to scrot
-        ([?\s-x] . (lambda ()
-		    (interactive)
-		    (shell-command "scrot -s '%Y-%m-%d_$wx$h_scrot.png' -e 'mv $f ~/Desktop/'")))
-        ;; Bind "s-+"/"s--" to volume
-        ([?\s-=] . (lambda ()
-		    (interactive)
-		    (shell-command "pactl set-sink-volume @DEFAULT_SINK@ +10%")))
-        ;; Bind "s-+"/"s--" to volume
-        ([?\s--] . (lambda ()
-		    (interactive)
-		    (shell-command "pactl set-sink-volume @DEFAULT_SINK@ -10%")))
+		([?\s-r] . (lambda (command)
+					 (interactive (list (read-shell-command "$ ")))
+					 (start-process-shell-command command nil command)))
+		;; Bind "s-g" to i3lock
+		([?\s-g] . (lambda ()
+					 (interactive)
+					 (shell-command "i3lock --color=#000000 --show-failed-attempts")))
+		;; Bind "s-x" to scrot
+		([?\s-x] . (lambda ()
+					 (interactive)
+					 (shell-command "scrot -s '%Y-%m-%d_$wx$h_scrot.png' -e 'mv $f ~/Desktop/'")))
+		;; Bind "s-+"/"s--" to volume
+		([?\s-=] . (lambda ()
+					 (interactive)
+					 (shell-command "pactl set-sink-volume @DEFAULT_SINK@ +10%")))
+		;; Bind "s-+"/"s--" to volume
+		([?\s--] . (lambda ()
+					 (interactive)
+					 (shell-command "pactl set-sink-volume @DEFAULT_SINK@ -10%")))
 		;; spotify play/pause
-        ([?\s-\;] . (lambda ()
-		    (interactive)
-		    (shell-command "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause")))
-        ([?\s-'] . (lambda ()
-		    (interactive)
-		    (shell-command "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next")))
-        ([?\s-:] . (lambda ()
-		    (interactive)
-		    (shell-command "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous")))
-		;; Startup apps
+		([?\s-\;] . (lambda ()
+					  (interactive)
+					  (shell-command "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause")))
+		([?\s-'] . (lambda ()
+					 (interactive)
+					 (shell-command "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next")))
+		([?\s-:] . (lambda ()
+					 (interactive)
+					 (shell-command "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous")))
+		;; Shortcuts for apps
 		;; w for web
-        ([?\s-b] . (lambda ()
-		    (interactive)
-		    (spawn-or-switch "Firefox" "firefox")))
+		([?\s-b] . (lambda ()
+					 (interactive)
+					 (spawn-or-switch "Firefox" "firefox")))
 		;; spotify
-        ([?\s-m] . (lambda ()
-		    (interactive)
-		    (spawn-or-switch "Spotify" "spotify")))
+		([?\s-s] . (lambda ()
+					 (interactive)
+					 (spawn-or-switch "Spotify" "spotify")))
 		;; Keepassxc
-        ([?\s-p] . (lambda ()
-		    (interactive)
-		    (spawn-or-switch "KeePassXC" "keepassxc")))
+		([?\s-p] . (lambda ()
+					 (interactive)
+					 (spawn-or-switch "KeePassXC" "keepassxc")))
 		;; Discord
 		([?\s-d] . (lambda ()
-			(interactive)
-		    (spawn-or-switch "discord" "Discord")))
+					 (interactive)
+					 (spawn-or-switch "discord" "Discord")))
 		;; eshell
 		;; t for terminal(i know, i know, eshell isn't really a teminal)
-        ([?\s-t] . (lambda ()
-		    (interactive)
-			(if (get-buffer "*eshell*")
-				(switch-to-buffer "*eshell*")
-			  (eshell))))
+		([?\s-t] . (lambda ()
+					 (interactive)
+					 (if (get-buffer "*eshell*")
+						 (switch-to-buffer "*eshell*")
+					   (eshell))))
 		))
 ;; Mainly to allow other apps to keep native shortcuts
 ;; and basic vim motions :)
+;; Try to enter char mode as not often as possible
 (exwm-input-set-simulation-keys
- '(([?\s-c] . C-c)
-   ([?\s-v] . C-v)
+ '(([?\s-c] . C-c) ; copy
+   ([?\s-v] . C-v) ; paste
    ([?\s-u] . C-l) ; For url bar access
+   ([?\s-w] . C-w) ; close tab
    ([?\C-h] . left)
    ([?\C-j] . down)
    ([?\C-k] . up)
    ([?\C-l] . right)))
 (define-key exwm-mode-map [?\M-o] 'switch-window)
-(when (frame-parameter (selected-frame) 'exwm-active)
-  ;; Startup commands - get run every time this config is refreshed so keep in mind when adding stuff
-  (start-process-shell-command "dropbox" nil "dropbox start")
-  (start-process-shell-command "xcompmgr" nil "xcompmgr -c -l0 -t0 -r0 -o.00")
-  (start-process-shell-command "setxkbmap" nil "setxkbmap -option caps:escape -option ralt:compose")
-  (start-process-shell-command "unclutter" nil "unclutter -idle 10") ; mouse goes away after 10 s
-  (start-process-shell-command "network manager" nil "nm-applet"))
+;; Startup commands - get run every time this config is refreshed so keep in mind when adding stuff
+(start-process-shell-command "dropbox" nil "dropbox start")
+(start-process-shell-command "xcompmgr" nil "xcompmgr -c -l0 -t0 -r0 -o.00")
+(start-process-shell-command "setxkbmap" nil "setxkbmap -option caps:escape -option ralt:compose")
+(start-process-shell-command "unclutter" nil "unclutter -idle 10") ; mouse goes away after 10 s
+(start-process-shell-command "network manager" nil "nm-applet")
 (provide 'init)
 ;;; init ends here

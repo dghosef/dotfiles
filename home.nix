@@ -22,7 +22,7 @@ let
     python-with-my-packages = python3.withPackages my-python-packages;
   allPlatformImports = [
     ./shell/git.nix
-    ./shell/fish.nix
+    # ./shell/fish.nix
     ./shell/tmux.nix
     ./shell/vim.nix
   ];
@@ -141,3 +141,5 @@ in
     set convert-meta on
     '';
 }
+
+  # TODO - make shortcuts to switch to, ex, firefox window rather than reopening it in current

@@ -17,6 +17,7 @@ with pkgs;
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./zenbook_duo.nix
     ];
 
   # ---------------Boot------------------
@@ -82,17 +83,6 @@ with pkgs;
   # hardware.pulseaudio.package = pkgs.pulseaudioFull;
   # Enable touchpad support (enabled default in most desktopManager).
   services.xserver.libinput.enable = true;
-  # Disable shutdown in power key
-  services.logind.extraConfig = ''HandlePowerKey=suspend'';
-  services.logind.lidSwitch = "ignore";
-  # Enable bluetooth(really spotty right now)
-  # hardware.bluetooth.enable = true;
-  # Switch to headphones by default
-  boot.extraModprobeConfig = ''
-    alias snd-card-0 snd-hda-intel
-    alias sound-slot-0 snd-hda-intel
-    options snd-hda-intel model=dell-m4-1 enable_msi=1
-'';
 
 
   # ------------------User Configuration----------------
@@ -109,8 +99,9 @@ with pkgs;
                     "docker"
                   ]; 
   };
-  programs.fish.enable = true;
-  users.extraUsers.dghosef.shell = pkgs.fish;
+  # programs.fish.enable = true;
+  # users.extraUsers.dghosef.shell = pkgs.fish;
+  programs.slock.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -127,7 +118,7 @@ with pkgs;
   nixpkgs.config.allowUnfree = true;
   environment.pathsToLink = [ "/libexec" ]; # required for i3blocks
   programs.steam.enable = true;
-  services.tlp.enable = true;
+  services.tlp.enable = true; # for battery life
   nixpkgs.config.packageOverrides = pkgs: {
     steam = pkgs.steam.override {
       extraPkgs = pkgs: [
@@ -151,9 +142,6 @@ with pkgs;
   # ---------------------------X-Server-----------------------
   services.xserver = {
     enable = true;
-    # ======================HARDWARE-SPECIFIC TO MY ZENBOOK DUO - COMMENT OUT ON OTHER SYSTEMS=======================
-    videoDrivers = [ "nvidia" ];
-    # ======================HARDWARE-SPECIFIC TO MY ZENBOOK DUO - COMMENT OUT ON OTHER SYSTEMS=======================
 
     # use i3
     desktopManager = {
@@ -178,6 +166,11 @@ with pkgs;
         manage = "desktop";
         name = "emacs";
         start = ''
+dropbox start &
+xcompmgr -c -l0 -t0 -r0 -o.00 &
+setxkbmap -option caps:escape -option ralt:compose &
+unclutter -idle 10 &
+nm-applet &
 emacs --eval '(progn  (exwm-enable))
 '
       '';
