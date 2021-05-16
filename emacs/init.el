@@ -176,14 +176,12 @@
 (defun split-and-follow-horizontally ()
   (interactive)
   (split-window-below)
-  (balance-windows)
   (other-window 1))
 (global-set-key (kbd "C-x 2") 'split-and-follow-horizontally)
 
 (defun split-and-follow-vertically ()
   (interactive)
   (split-window-right)
-  (balance-windows)
   (other-window 1))
 (define-key evil-normal-state-map (kbd "C-w C-v") 'split-and-follow-vertically)
 (define-key evil-normal-state-map (kbd "C-w C-s") 'split-and-follow-horizontally)
@@ -195,9 +193,10 @@
 (define-key evil-normal-state-map (kbd "C-w C-k") 'windmove-up)
 (define-key evil-normal-state-map (kbd "C-w C-l") 'windmove-right)
 ;; Go to other window
-(install-package 'ace-window)
-
-(global-set-key (kbd "M-o") 'ace-window)
+(install-package 'switch-window)
+(require 'switch-window)
+(setq switch-window-shortcut-style 'qwerty)
+(global-set-key (kbd "M-o") 'switch-window)
 ;; Use letter keys for window switch
 (setq aw-keys '(?a ?b ?c ?d ?e ?f ?g ?h ?i))
 ;; Jump to largest window
@@ -216,7 +215,6 @@
 (defun split-along-longer-side ()
   "Jump to largest window and split along its longest side."
   (interactive)
-  (jump-to-largest-window)
   (if (> (window-pixel-width) (window-pixel-height))
 	  (split-and-follow-vertically)
 	(split-and-follow-horizontally)))
@@ -224,7 +222,7 @@
 ;; Window resize/resizing
 ;; C-c b(big) h(horizontal)/v(vertical)
 ;; C-c s(small) h(horizontal)/v(vertical)
-(define-key evil-normal-state-map (kbd "C-c b h") 'enlarge-window)
+(define-key evil-normal-state-map (kbd "+") 'enlarge-window)
 (define-key evil-normal-state-map (kbd "-") 'shrink-window)
 
 ; fuzzy find ido
@@ -253,6 +251,7 @@
 (add-hook 'prog-mode-hook #'flycheck-mode)
 ;; company-mode autocomplete
 (install-package 'company)
+(require 'company)
 
 (add-hook 'after-init-hook 'global-company-mode)
 (setq company-dabbrev-downcase 0)
@@ -268,8 +267,8 @@
 
 (install-package 'doom-themes)
 
+(setq solarized-high-contrast-mode-line t) ; must be before load-theme i think
 (load-theme 'solarized-dark t)
-(setq solarized-high-contrast-mode-line nil)
 
 ;;; ------------------------------org-mode-------------------------
 ;; Spellcheck
@@ -452,6 +451,14 @@
  'eshell-mode-hook
  (lambda () (when (file-remote-p default-directory) (company-mode -1))))
 
+
+;; autocomplete for eshell :)
+(install-package 'company-shell)
+(add-hook
+ 'eshell-mode-hook
+ (lambda () (add-to-list 'company-backends 'company-shell)))
+
+
 (install-package 'eglot)
 (add-hook 'prog-mode-hook 'eglot-ensure)
 ;;; -------------------------------python-------------------------------------
@@ -525,11 +532,18 @@
 (add-to-list 'auto-mode-alist '("\\.y$" . bison-mode))
 (autoload 'flex-mode "bison-mode")
 
+;;; -----------------diminish--------------------------
+(install-package 'diminish)
+(diminish 'projectile-mode)
+(diminish 'flycheck-mode)
+(diminish 'undo-tree-mode)
+(diminish 'anzu-mode)
 
 ;;;-----------------------------exwm----------------------------
-;; Currently experimental and idk if I'll actually use this
+;; Try not to have this section affect regular emacs boots.
 ;; Very much from https://github.com/ch11ng/exwm/wiki/Configuration-Example
 ;; Then tried to have alot of my i3 features/config here
+;; I don't think I will ever switch to another wm/de
 (install-package `exwm)
 ;; Buffer movement follows mouse. Must be called before exwm starts
 (setq mouse-autoselect-window t
@@ -544,7 +558,7 @@
 (require 'exwm-config)
 (require 'exwm-systemtray)
 (exwm-systemtray-enable)
-(setq exwm-systemtray-height 20)
+(setq exwm-systemtray-height 15)
 (exwm-config-ido)
 (setq exwm-workspace-number 10)
 ;; All buffers created in EXWM mode are named "*EXWM*". You may want to
@@ -582,8 +596,6 @@
 ;; Here are a few examples:
 (setq exwm-input-global-keys
       `(
-        ;; Bind "s-r" to exit char-mode and fullscreen mode.
-        ([?\s-r] . exwm-reset)
         ;; Bind "s-w" to switch workspace interactively.
         ([?\s-w] . exwm-workspace-switch)
 		;; S-hjkl to emulate my i3 setup
@@ -683,12 +695,13 @@
    ([?\C-j] . down)
    ([?\C-k] . up)
    ([?\C-l] . right)))
-
-;; Startup commands - get run every time this config is refreshed so keep in mind when adding stuff
-(start-process-shell-command "dropbox" nil "dropbox start")
-(start-process-shell-command "xcompmgr" nil "xcompmgr -c -l0 -t0 -r0 -o.00")
-(start-process-shell-command "setxkbmap" nil "setxkbmap -option caps:escape -option ralt:compose")
-(start-process-shell-command "unclutter" nil "unclutter -idle 10")
-(start-process-shell-command "network manager" nil "unclutter -idle 10")
+(define-key exwm-mode-map [?\M-o] 'switch-window)
+(when (frame-parameter (selected-frame) 'exwm-active)
+  ;; Startup commands - get run every time this config is refreshed so keep in mind when adding stuff
+  (start-process-shell-command "dropbox" nil "dropbox start")
+  (start-process-shell-command "xcompmgr" nil "xcompmgr -c -l0 -t0 -r0 -o.00")
+  (start-process-shell-command "setxkbmap" nil "setxkbmap -option caps:escape -option ralt:compose")
+  (start-process-shell-command "unclutter" nil "unclutter -idle 10") ; mouse goes away after 10 s
+  (start-process-shell-command "network manager" nil "nm-applet"))
 (provide 'init)
 ;;; init ends here
