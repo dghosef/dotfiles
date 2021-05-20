@@ -1,5 +1,7 @@
 { config, pkgs, lib, ... }:
 {
+  # CHANGE wlan0 TO WHATEVER ELSE IT SHOULD BE(wlo1) on other systems
+  networking.interfaces.wlo1.useDHCP = true;
   # Disable shutdown in power key
   services.logind.extraConfig = ''HandlePowerKey=suspend'';
   services.logind.lidSwitch = "ignore";

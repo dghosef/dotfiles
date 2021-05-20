@@ -31,8 +31,6 @@ with pkgs;
   # Per-interface useDHCP will be mandatory in the future, so this generated config
   # replicates the default behaviour.
   networking.useDHCP = false;
-  # CHANGE wlan0 TO WHATEVER ELSE IT SHOULD BE(wlo1)
-  networking.interfaces.wlo1.useDHCP = true;
   # Enable the OpenSSH daemon. Disable root login
   services.openssh.enable = true;
 
