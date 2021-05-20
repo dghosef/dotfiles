@@ -109,10 +109,6 @@ with pkgs;
   environment.pathsToLink = [ "/libexec" ]; # required for i3blocks
   programs.steam.enable = true;
   services.tlp.enable = true; # for battery life
-  nixpkgs.config.packageOverrides = pkgs: {
-    steam = pkgs.steam.override {
-    };
-  };
   virtualisation.libvirtd.enable = true;
   virtualisation.docker.enable = true;
   programs.dconf.enable = true;
@@ -153,7 +149,6 @@ dropbox start &
 xcompmgr -c -l0 -t0 -r0 -o.00 &
 unclutter -idle 10 &
 nm-applet &
-thunderbird --headless &
 emacs --eval '(progn  (exwm-enable))
 '
       '';

@@ -88,8 +88,9 @@ in
     pkgs.gimp
     pkgs.drawing
     # Web
-    pkgs.firefox-bin
+    pkgs.firefox
     pkgs.google-chrome
+    pkgs.chromium
     pkgs.qutebrowser
     pkgs.spotify
     pkgs.keepassxc
