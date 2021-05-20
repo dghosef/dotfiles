@@ -1,5 +1,6 @@
 { config, pkgs, lib, ... }:
 {
+  networking.networkmanager.enable = true;
   # CHANGE wlan0 TO WHATEVER ELSE IT SHOULD BE(wlo1) on other systems
   networking.interfaces.wlo1.useDHCP = true;
   # Disable shutdown in power key
