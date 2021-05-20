@@ -424,8 +424,8 @@
 (defun start_small_shell()
   (interactive)
   (split-window-below)
+  (window-resize nil (/ (window-total-height) 2))
   (windmove-down)
-  (window-resize nil (- (/ (window-total-height) 2)))
   (eshell)
   (windmove-up)
   (ecd)
@@ -604,6 +604,8 @@
 			(select-window (get-buffer-window buf)))
 		(switch-to-buffer buf))
 	(start-process-shell-command cmd nil cmd)))
+(defun spawn (cmd)
+  (start-process-shell-command cmd nil cmd))
 ;; Global keybindings can be defined with `exwm-input-global-keys'.
 ;; Here are a few examples:
 (setq exwm-input-global-keys
@@ -615,7 +617,11 @@
 		([?\s-j] . windmove-down)
 		([?\s-k] . windmove-up)
 		([?\s-l] . windmove-right)
-		([?\s-n] . split-along-longer-side)
+		([?\s-n] . (lambda ()
+					 (interactive)
+					 (split-along-longer-side)
+					 (if (not (get-buffer "Thunderbird"))
+						 (spawn "thunderbird"))))
 		([?\s-\[] . previous-buffer)
 		([?\s-\]] . next-buffer)
 		([?\s-o] . switch-to-previous-buffer)
@@ -623,6 +629,8 @@
 		([?\s-i] . exwm-input-toggle-keyboard)
 		;; toggle fullscreen
 		([?\s-f] . exwm-layout-toggle-fullscreen)
+		;; go to most recent window
+		([?\s-`] . switch-to-previous-buffer)
 		;; 'S-s-N': Move window to, and switch to, a certain workspace.
 		,@(cl-mapcar (lambda (c n)
 					   `(,(kbd (format "s-%c" c)) .
@@ -645,7 +653,7 @@
 		;; r for rofi
 		([?\s-r] . (lambda (command)
 					 (interactive (list (read-shell-command "$ ")))
-					 (start-process-shell-command command nil command)))
+					 (spawn command)))
 		;; Bind "s-g" to i3lock
 		([?\s-g] . (lambda ()
 					 (interactive)
@@ -653,25 +661,25 @@
 		;; Bind "s-x" to scrot
 		([?\s-x] . (lambda ()
 					 (interactive)
-					 (shell-command "scrot -s '%Y-%m-%d_$wx$h_scrot.png' -e 'mv $f ~/Desktop/'")))
+					 (spawn "scrot -s '%Y-%m-%d_$wx$h_scrot.png' -e 'mv $f ~/Desktop/'")))
 		;; Bind "s-+"/"s--" to volume
 		([?\s-=] . (lambda ()
 					 (interactive)
-					 (shell-command "pactl set-sink-volume @DEFAULT_SINK@ +10%")))
+					 (spawn "pactl set-sink-volume @DEFAULT_SINK@ +10%")))
 		;; Bind "s-+"/"s--" to volume
 		([?\s--] . (lambda ()
 					 (interactive)
-					 (shell-command "pactl set-sink-volume @DEFAULT_SINK@ -10%")))
+					 (spawn "pactl set-sink-volume @DEFAULT_SINK@ -10%")))
 		;; spotify play/pause
 		([?\s-\;] . (lambda ()
 					  (interactive)
-					  (shell-command "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause")))
+					  (spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause")))
 		([?\s-'] . (lambda ()
 					 (interactive)
-					 (shell-command "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next")))
+					 (spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next")))
 		([?\s-:] . (lambda ()
 					 (interactive)
-					 (shell-command "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous")))
+					 (spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous")))
 		;; Shortcuts for apps
 		;; w for web
 		([?\s-b] . (lambda ()
@@ -689,6 +697,10 @@
 		([?\s-d] . (lambda ()
 					 (interactive)
 					 (spawn-or-switch "discord" "Discord")))
+		;; Thunderbird
+		([?\s-m] . (lambda ()
+					 (interactive)
+					 (spawn-or-switch "Thunderbird" "thunderbird")))
 		;; eshell
 		;; t for terminal(i know, i know, eshell isn't really a teminal)
 		([?\s-t] . (lambda ()
@@ -705,16 +717,7 @@
    ([?\s-v] . C-v) ; paste
    ([?\s-u] . C-l) ; For url bar access
    ([?\s-w] . C-w) ; close tab
-   ([?\C-h] . left)
-   ([?\C-j] . down)
-   ([?\C-k] . up)
-   ([?\C-l] . right)))
+   ([?\C-l] . C-l))) ; access url
 (define-key exwm-mode-map [?\M-o] 'switch-window)
-;; Startup commands - get run every time this config is refreshed so keep in mind when adding stuff
-(start-process-shell-command "dropbox" nil "dropbox start")
-(start-process-shell-command "xcompmgr" nil "xcompmgr -c -l0 -t0 -r0 -o.00")
-(start-process-shell-command "setxkbmap" nil "setxkbmap -option caps:escape -option ralt:compose")
-(start-process-shell-command "unclutter" nil "unclutter -idle 10") ; mouse goes away after 10 s
-(start-process-shell-command "network manager" nil "nm-applet")
 (provide 'init)
 ;;; init ends here

@@ -6,6 +6,8 @@
 {
   imports =
     [ (modulesPath + "/installer/scan/not-detected.nix")
+      # This is the only line ur allowed to edit in this file
+      ./zenbook_duo.nix
     ];
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "usbhid" "sd_mod" ];

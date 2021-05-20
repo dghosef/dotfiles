@@ -17,7 +17,6 @@ with pkgs;
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./zenbook_duo.nix
     ];
 
   # ---------------Boot------------------
@@ -27,8 +26,6 @@ with pkgs;
 
   # ----------------Networking-------------------
   networking.hostName = "nixos"; # Define your hostname.
-  # networking.wireless.iwd.enable = true;
-  networking.wireless.enable = false;
   networking.networkmanager.enable = true;
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
   # Per-interface useDHCP will be mandatory in the future, so this generated config
@@ -80,10 +77,8 @@ with pkgs;
   sound.enable = true;
   hardware.pulseaudio.enable = true;
   hardware.pulseaudio.extraConfig = "unload-module module-switch-on-port-available";
-  # hardware.pulseaudio.package = pkgs.pulseaudioFull;
   # Enable touchpad support (enabled default in most desktopManager).
   services.xserver.libinput.enable = true;
-
 
   # ------------------User Configuration----------------
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -99,9 +94,6 @@ with pkgs;
                     "docker"
                   ]; 
   };
-  # programs.fish.enable = true;
-  # users.extraUsers.dghosef.shell = pkgs.fish;
-  programs.slock.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -121,9 +113,6 @@ with pkgs;
   services.tlp.enable = true; # for battery life
   nixpkgs.config.packageOverrides = pkgs: {
     steam = pkgs.steam.override {
-      extraPkgs = pkgs: [
-        glibc
-      ];
     };
   };
   virtualisation.libvirtd.enable = true;
@@ -133,10 +122,6 @@ with pkgs;
     lxappearance
     acpi
     lxqt.pavucontrol-qt
-    # Emacs w/ vterm. For some reason didn't work in home-manager
-    ((emacsPackagesNgGen emacs).emacsWithPackages (epkgs: [
-      epkgs.vterm
-    ]))
   ];
   environment.variables.EDITOR = "termite";
   # ---------------------------X-Server-----------------------
@@ -168,9 +153,9 @@ with pkgs;
         start = ''
 dropbox start &
 xcompmgr -c -l0 -t0 -r0 -o.00 &
-setxkbmap -option caps:escape -option ralt:compose &
 unclutter -idle 10 &
 nm-applet &
+thunderbird --headless &
 emacs --eval '(progn  (exwm-enable))
 '
       '';

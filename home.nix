@@ -22,7 +22,6 @@ let
     python-with-my-packages = python3.withPackages my-python-packages;
   allPlatformImports = [
     ./shell/git.nix
-    # ./shell/fish.nix
     ./shell/tmux.nix
     ./shell/vim.nix
   ];
@@ -66,10 +65,10 @@ in
     pkgs.unzip
     pkgs.xsane
     pkgs.xdg_utils
-    pkgs.xdg-user-dirs
+    pkgs.xdg-user-dirs # home directory
     pkgs.unclutter # hide mouse
     # Graphics
-    pkgs.scrot
+    pkgs.scrot # screenshot
     pkgs.i3blocks-gaps
     pkgs.arandr
     pkgs.networkmanagerapplet
@@ -92,14 +91,15 @@ in
     pkgs.firefox-bin
     pkgs.google-chrome
     pkgs.qutebrowser
-    pkgs.zoom-us
     pkgs.spotify
     pkgs.keepassxc
     pkgs.kpcli
     pkgs.wget
+    pkgs.thunderbird
     # Communication
     pkgs.xcompmgr # for zoom annotation
     pkgs.discord
+    pkgs.zoom-us
     # Gaming
     pkgs.minecraft
     # ----------------------------Dev------------------------
@@ -107,10 +107,13 @@ in
     pkgs.git
     pkgs.neovim
     # Emacs
+    # Emacs w/ vterm. For some reason didn't work in home-manager
+    ((emacsPackagesNgGen emacs).emacsWithPackages (epkgs: [
+      epkgs.vterm
+    ]))
     pkgs.libvterm
     pkgs.pandoc
     pkgs.ripgrep
-    pkgs.irony-server # c-type language autocomplete
     pkgs.texlive.combined.scheme-full # latex
     pkgs.ispell
     pkgs.readline
@@ -141,5 +144,3 @@ in
     set convert-meta on
     '';
 }
-
-  # TODO - make shortcuts to switch to, ex, firefox window rather than reopening it in current

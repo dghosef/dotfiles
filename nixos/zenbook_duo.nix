@@ -4,7 +4,6 @@
   services.logind.extraConfig = ''HandlePowerKey=suspend'';
   services.logind.lidSwitch = "ignore";
   # Enable bluetooth(really spotty right now)
-  # hardware.bluetooth.enable = true;
   # Switch to headphones by default
   boot.extraModprobeConfig = ''
     alias snd-card-0 snd-hda-intel
