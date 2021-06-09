@@ -13,6 +13,7 @@
 ;; For latex preview dvipng and 'latex'. For export also install zip
 ;; Enable debug messages for problems with this file
 ;; (setq debug-on-error t)
+;; TODO: LSP work w/ Myth, Install evil-numbers, make lock work everywhere, eshell segfault
 ;;; ---------------------------setup package manager-------------------------
 ;; Set up package.el to work with MELPA
 (require 'package)

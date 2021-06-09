@@ -18,6 +18,8 @@ let
     flake8
     rope
     autopep8
+    pillow
+    tkinter
   ]; 
     python-with-my-packages = python3.withPackages my-python-packages;
   allPlatformImports = [
@@ -126,8 +128,10 @@ in
     pkgs.libtool
     pkgs.SDL
     pkgs.ccls
-    pkgs.gcc
+    pkgs.clang_12
+    pkgs.binutils
     pkgs.gdb
+    pkgs.speedscope
     pkgs.bear
     # Python
     python-with-my-packages
