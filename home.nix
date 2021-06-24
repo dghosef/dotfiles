@@ -20,6 +20,8 @@ let
     autopep8
     pillow
     tkinter
+    # Benchmarks for compiler
+    psutil
   ]; 
     python-with-my-packages = python3.withPackages my-python-packages;
   allPlatformImports = [
@@ -62,6 +64,7 @@ in
     # -------------System-------------------
     # General
     pkgs.system-config-printer
+    pkgs.pamixer
     pkgs.lm_sensors
     pkgs.zip
     pkgs.unzip
@@ -69,6 +72,7 @@ in
     pkgs.xdg_utils
     pkgs.xdg-user-dirs # home directory
     pkgs.unclutter # hide mouse
+    pkgs.linuxPackages.perf # benchmarking
     # Graphics
     pkgs.scrot # screenshot
     pkgs.i3blocks-gaps
@@ -109,8 +113,9 @@ in
     # General
     pkgs.git
     pkgs.neovim
+    # Bash
+    pkgs.nodePackages.bash-language-server
     # Emacs
-    # Emacs w/ vterm. For some reason didn't work in home-manager
     ((emacsPackagesNgGen emacs).emacsWithPackages (epkgs: [
       epkgs.vterm
     ]))
@@ -122,8 +127,14 @@ in
     pkgs.readline
     # nixlang
     pkgs.rnix-lsp
-    # General C-langs
+    # C/CPP
+    pkgs.bison
+    pkgs.autoconf
+    pkgs.automake
+    pkgs.gperf
+    pkgs.gettext
     pkgs.cmake
+    pkgs.tinycc
     pkgs.gnumake
     pkgs.libtool
     pkgs.SDL
@@ -131,7 +142,6 @@ in
     pkgs.clang_12
     pkgs.binutils
     pkgs.gdb
-    pkgs.speedscope
     pkgs.bear
     # Python
     python-with-my-packages

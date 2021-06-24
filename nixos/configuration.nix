@@ -75,9 +75,7 @@ with pkgs;
   hardware.pulseaudio.enable = true;
   hardware.pulseaudio.extraConfig = "unload-module module-switch-on-port-available";
   # Enable touchpad support (enabled default in most desktopManager).
-  services.xserver.libinput.enable = true;
-
-  # ------------------User Configuration----------------
+  services.xserver.libinput.enable = true;  # ------------------User Configuration----------------
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.dghosef = {
     isNormalUser = true;
@@ -112,6 +110,7 @@ with pkgs;
   virtualisation.docker.enable = true;
   programs.dconf.enable = true;
   environment.systemPackages = with pkgs; [
+    pamixer
     lxappearance
     acpi
     lxqt.pavucontrol-qt
@@ -148,6 +147,7 @@ dropbox start &
 xcompmgr -c -l0 -t0 -r0 -o.00 &
 unclutter -idle 10 &
 nm-applet &
+blueman-applet &
 emacs --eval '(progn  (exwm-enable))
 '
       '';

@@ -1,6 +1,5 @@
 ;; show # of matches for search
 ;;; notes
-;; Guiding principles: Reproducability and portability
 ;; Exwm - setup emacs to launch on boot
 ;; Install lsp stuff for all required langues(clang for cpp)
 ;; Please install git, vim, zip, etc
@@ -12,15 +11,15 @@
 ;; For taking notes/drawing the program "drawing"
 ;; For latex preview dvipng and 'latex'. For export also install zip
 ;; Enable debug messages for problems with this file
-;; (setq debug-on-error t)
-;; TODO: LSP work w/ Myth, Install evil-numbers, make lock work everywhere, eshell segfault
+;; (setq debug-on-error t) ; uncomment this when stuff doesn't work
+;; Setup docker
 ;;; ---------------------------setup package manager-------------------------
 ;; Set up package.el to work with MELPA
 (require 'package)
 (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
 						 ("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
-;; Ensure emacs doesn't write to init.eL
+;; Ensure emacs doesn't write to init.el
 (setq custom-file (concat user-emacs-directory "/custom.el"))
 
 
@@ -134,9 +133,11 @@
 	  (find-file file-name))))
 (global-set-key (kbd "C-c r") 'refresh-buffer)
 
-;; Show number of matches when searching
-(install-package 'anzu)
-(global-anzu-mode +1)
+;; Increment/decrement numbers
+(install-package 'evil-numbers)
+(require 'evil-numbers)
+(define-key evil-normal-state-map (kbd "C-c +") 'evil-numbers/inc-at-pt)
+(define-key evil-normal-state-map (kbd "C-c -") 'evil-numbers/dec-at-pt)
 
 ;;; ------------------------navigation---------------------------
 ;; Call nearest makefile in parent dir.
@@ -157,7 +158,7 @@
 ;; Over tramp, use simple autocomplete
 (add-hook
  'prog-mode-hook
- (lambda () (when (file-remote-p default-directory) (company-mode -1) (fancy-dabbrev-mode))))
+ (lambda () (when (file-remote-p default-directory)  (fancy-dabbrev-mode))))
 ;; Sentences don't need 2 spaces after.
 (setf sentence-end-double-space nil)
 
@@ -265,12 +266,19 @@
 (menu-bar-mode 0)
 
 ;; Theme
+;; Show number of matches when searching
+(install-package 'anzu)
+(require 'anzu)
+(global-anzu-mode +1)
+
 (install-package 'solarized-theme)
 
 (install-package 'doom-themes)
 
 (setq solarized-high-contrast-mode-line t) ; must be before load-theme i think
 (load-theme 'solarized-dark t)
+;; For some reason this only works when it's after the solarized init
+(set-face-attribute 'anzu-mode-line nil :foreground "purple" :weight 'bold)
 
 ;;; ------------------------------org-mode-------------------------
 ;; Spellcheck
@@ -319,6 +327,10 @@
 (global-set-key (kbd "C-c f s" ) ;; Go to the home directory of dired
 				(lambda () (interactive)
 				  (find-file "/ssh:dghosef@myth.stanford.edu:")))
+(global-set-key (kbd "C-c f a" ) ;; Open my arch linux docker
+				(lambda () (interactive)
+				  (start-process-shell-command "docker-arch" nil "~/arch/run_env")
+				  (find-file "/docker:root@arch:/arch/")))
 ;; Snippets
 (setq org-agenda-restore-windows-after-quit t)
 (setq org-default-notes-file (concat org-directory "lists.org"))
@@ -442,7 +454,7 @@
   (dolist (var '(("ipython" "ipython --simple-prompt -i --pprint $*")
 				 (":q" "exit $*")
 				 ("dotfiles" "/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME $*")
-				 ("ff" "find-file $")
+				 ("ff" "find-file $*")
 				 ("tp" "trash-put $*")))
 	(add-to-list 'eshell-command-aliases-list var)))
 
@@ -461,8 +473,30 @@
  (lambda () (add-to-list 'company-backends 'company-shell)))
 
 
+;; eglot lsp stuff
 (install-package 'eglot)
 (add-hook 'prog-mode-hook 'eglot-ensure)
+
+;; Colors eshell
+;; https://github.com/atomontage/xterm-color
+(install-package 'xterm-color)
+(require 'xterm-color)
+(require 'eshell) ; or use with-eval-after-load
+
+(add-hook 'eshell-before-prompt-hook
+          (lambda ()
+            (setq xterm-color-preserve-properties t)))
+
+(add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter)
+(setq eshell-output-filter-functions (remove 'eshell-handle-ansi-color eshell-output-filter-functions))
+(setenv "TERM" "xterm-256color")
+;; Colors for compilation buffer
+(setq compilation-environment '("TERM=xterm-256color"))
+
+(defun my/advice-compilation-filter (f proc string)
+  (funcall f proc (xterm-color-filter string)))
+
+(advice-add 'compilation-filter :around #'my/advice-compilation-filter)
 ;;; -------------------------------python-------------------------------------
 ;; Download elpy - requires python, jedi, black, autopep8, yapf(install w/ pip)
 (install-package 'elpy)
@@ -487,7 +521,8 @@
 (eglot-jl-init)
 ;;; -------------------------------c/cpp/c++/obj-c-------------------------------------
 ;; Bracket indentation
-(setq c-default-style "bsd")
+(setq c-default-style "linux"
+	  c-basic-offset 4)
 ;; M-[ is insert new {} with indentation and stuff
 (defun insert_brackets ()
   (interactive)
@@ -547,6 +582,8 @@
 (diminish 'undo-tree-mode)
 (diminish 'anzu-mode)
 
+;;; -----------------docker---------------------
+(install-package 'docker-tramp)
 ;;;-----------------------------exwm----------------------------
 ;; Try not to have this section affect regular emacs boots.
 ;; Very much from https://github.com/ch11ng/exwm/wiki/Configuration-Example
@@ -602,7 +639,7 @@
   (if (get-buffer buf)
 	  ;; Either reopen the buffer if it's not already open or jump to the window
 	  ;; if it is. If we're already on that buffer, go to other buffer
-	  (if (get-buffer-window buf)
+	  (if (and (get-buffer-window buf) (not (string= cmd "eshell"))) ;; Remove the and later
 		  (if (string= (buffer-name) buf)
 			  (switch-to-previous-buffer)
 			(select-window (get-buffer-window buf)))
@@ -663,7 +700,8 @@
 		;; Bind "s-g" to i3lock
 		([?\s-g] . (lambda ()
 					 (interactive)
-					 (shell-command "i3lock --color=#000000 --show-failed-attempts")))
+					 (let ((default-directory "~"))
+					   (shell-command "i3lock --color=#000000 --show-failed-attempts"))))
 		;; Bind "s-x" to scrot
 		([?\s-x] . (lambda ()
 					 (interactive)
@@ -671,11 +709,11 @@
 		;; Bind "s-+"/"s--" to volume
 		([?\s-=] . (lambda ()
 					 (interactive)
-					 (spawn "pactl set-sink-volume @DEFAULT_SINK@ +10%")))
+					 (spawn "pamixer -i 10")))
 		;; Bind "s-+"/"s--" to volume
 		([?\s--] . (lambda ()
 					 (interactive)
-					 (spawn "pactl set-sink-volume @DEFAULT_SINK@ -10%")))
+					 (spawn "pamixer -d 10")))
 		;; spotify play/pause. Start spotify if it is not active
 		([?\s-\;] . (lambda ()
 					  (interactive)
@@ -701,10 +739,6 @@
 		([?\s-p] . (lambda ()
 					 (interactive)
 					 (spawn-or-switch "KeePassXC" "keepassxc")))
-		;; Discord
-		([?\s-d] . (lambda ()
-					 (interactive)
-					 (spawn-or-switch "discord" "Discord")))
 		;; Thunderbird
 		([?\s-m] . (lambda ()
 					 (interactive)
@@ -713,7 +747,7 @@
 		;; t for terminal(i know, i know, eshell isn't really a teminal)
 		([?\s-t] . (lambda ()
 					 (interactive)
-					 (spawn-or-switch "*eshell*" "eshell")))))
+					 (spawn-or-switch "eshell" "eshell")))))
 ;; Mainly to allow other apps to keep native shortcuts
 ;; and basic vim motions :)
 ;; Try to enter char mode as not often as possible
@@ -726,3 +760,4 @@
 (define-key exwm-mode-map [?\M-o] 'switch-window)
 (provide 'init)
 ;;; init ends here
+
